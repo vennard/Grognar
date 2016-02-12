@@ -1,7 +1,13 @@
-#!/usr/bin/python
+#!/usr/bin/python3.5
 
 import pygame
 from pygame.locals import *
+
+def debugtext(screen, textout):
+  # JLV debug text output
+  font=pygame.font.Font(None,30)
+  text=font.render("DEBUG:"+str(textout),1,(255,255,0))
+  screen.blit(text, (100,100))
 
 def create_test_shape(size = (32,32), color = (255,255,255)):
   surface = pygame.Surface(size)
@@ -71,15 +77,22 @@ def main():
 	character = Main_Character()
 	allsprites = pygame.sprite.RenderPlain((character))
 
+	screen.blit(background, (0, 0))
+
 	# Event loop
 	while 1:
 		for event in pygame.event.get():
 			if event.type == QUIT:
-				return
+			   return
+			elif event.type == KEYDOWN:
+			   if event.key == pygame.K_LEFT:
+				   debugtext(screen, "dick")
+			else:
+			   pass
 
-		allsprites.update()
-		screen.blit(background, (0, 0))
-		allsprites.draw(screen)
+		#allsprites.update()
+		#allsprites.draw(screen)
+		#debugtext(screen, "blabla")
 		pygame.display.flip()
 
 
