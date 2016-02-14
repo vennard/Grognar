@@ -21,6 +21,13 @@ MOVEMENTS = {pygame.K_LEFT : (-1,0),
                         pygame.K_DOWN : (0,1),
                         }
 
+class Background(pygame.sprite.Sprite):
+    def __init__(self, image_file, location):
+        pygame.sprite.Sprite.__init__(self) #call Sprite initializer
+        self.image = pygame.image.load(image_file)
+        self.rect = self.image.get_rect()
+        self.rect.left, self.rect.top = location
+
 class Main_Character(pygame.sprite.Sprite):
     '''The main character of the game.
      
@@ -57,6 +64,11 @@ def main():
 	screen = pygame.display.set_mode((640, 480))
 	pygame.display.set_caption('Basic Pygame program')
 
+        # JLV test background
+        #rat = pygame.image.load("images\boobrat.png")
+        BackGround = Background('images/boobrat.png',(0,0))
+        #screen.blit(rat, (200,200))
+
 	# Fill background
 	background = pygame.Surface(screen.get_size())
 	background = background.convert()
@@ -81,6 +93,8 @@ def main():
 
 	# Event loop
 	while 1:
+                screen.fill([255, 255, 255])
+                screen.blit(BackGround.image, BackGround.rect)
 		for event in pygame.event.get():
 			if event.type == QUIT:
 			   return
