@@ -1,0 +1,16 @@
+" vim config file specifically for python programming
+" recommend to be used by anyone contributing to this project
+
+" enable syntax coloring, indentation, and  automatic indentation
+syntax on
+set tabstop=4
+set expandtab
+set shiftwidth=4
+set softtabstop=4
+filetype indent plugin on
+
+colorscheme desert
+
+
+
+
