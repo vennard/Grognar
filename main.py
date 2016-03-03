@@ -15,12 +15,13 @@ pygame.display.set_caption('Basic Pygame Program')
 # initialize Game Clock
 clk = pygame.time.Clock()
 
-# Test ZONE
+# TODO testing custom Block class instantiation
 position = [10,10]
 test = levelcreation.Block('images/tile_sample1.png', position)
 testimage = pygame.image.load('images/tile_sample1.png')
 screen.blit(test.image, test.rect)
 pygame.display.flip()
+
 
 while 1:
     for event in pygame.event.get():

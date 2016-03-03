@@ -8,6 +8,10 @@ def testcall():
     print("successfully called testcall in lib/levelcreation.py")
 
 class Block(pygame.sprite.Sprite):
+    blockType = None
+    image = None
+
+
     '''This class represents the basic building blocks of the game level'''
     def __init__(self, image, pos):
         # call parent constructor
