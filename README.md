@@ -2,6 +2,26 @@
 
 Goal: Creating a simple rogue/nethack like 2D dungeon rpg
 
+Resources:
+1. Vim Quick Reference Card: http://users.ece.utexas.edu/~adnan/vimqrc.html
+    a.Some of my favorite commands are the split screening using :sp or :vs to open another file with a vertical or horizontal split then you can move between with ctrl+ww
+    
+2. Quick and Dirty guide to using git
+    a.Always use git pull when starting to work to make sure you pull in the latest work
+    b.git clone <link to repo> : redownload repo to current directory, useful if you break everything
+    c.git status 
+        ---git diff--- and use q to exit
+    d.git commit -a -m "add a relevant message of what you're adding here" : this is how you save your work to the local machine
+    e.git push : this is how you push your locally saved commits out to the github 'cloud'
+
+Quick reference for commands:
+git pull
+git clone <http link>
+git status
+git diff
+git commit -a -m "my message"
+git push
+
 Basic Development Plan:
 1. Level Creation
 2. Movement / Collision Detection

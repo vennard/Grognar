@@ -22,5 +22,12 @@ class Block(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.topleft = pos
 
+class Room(Block):
+    pos = [0,0]  # contains top left corner coords
+    size = [0,0]    # contains x and y size of room
+    blocks = []     # initialized empty list for blocks
 
+    def __init__(self, pos):
+        super(Room, self).__init__()
 
+        #TODO start just initializing a single block to test
