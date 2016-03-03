@@ -1,6 +1,7 @@
 # Contains methods and resources for level generation
 
 import pygame
+import random
 
 WHITE = (255,255,255)
 
@@ -22,12 +23,15 @@ class Block(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.topleft = pos
 
-class Room(Block):
-    pos = [0,0]  # contains top left corner coords
+class Room:
     size = [0,0]    # contains x and y size of room
+    topleft = [0,0]     #contains top left coords of room
+    floor_images = []
     blocks = []     # initialized empty list for blocks
 
-    def __init__(self, pos):
-        super(Room, self).__init__()
-
-        #TODO start just initializing a single block to test
+    def __init__(self, size, topleft, floor_images):
+        self.size = size
+        self.topleft = topleft
+        self.floor_images = floor_images 
+        test = Block('images/tile0.png', pos)
+        self.blocks.append(test)

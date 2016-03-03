@@ -18,9 +18,16 @@ clk = pygame.time.Clock()
 # TODO testing custom Block class instantiation
 position = [10,10]
 test = levelcreation.Block('images/tile_sample1.png', position)
-testimage = pygame.image.load('images/tile_sample1.png')
+#testimage = pygame.image.load('images/tile_sample1.png')
 screen.blit(test.image, test.rect)
 pygame.display.flip()
+
+# TODO testing custom room class instantiation
+pos = [100,100]
+test_room = levelcreation.Room(pos)
+screen.blit(test_room.blocks[0].image, test_room.blocks[0].rect)
+
+
 
 
 while 1:
