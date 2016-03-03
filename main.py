@@ -24,10 +24,17 @@ pygame.display.flip()
 
 # TODO testing custom room class instantiation
 pos = [100,100]
-test_room = levelcreation.Room(pos)
-screen.blit(test_room.blocks[0].image, test_room.blocks[0].rect)
+test1 = levelcreation.Block('images/tile1.png', pos)
+size = [1,1]
+floor_images = ['images/tile0.png','images/tile1.png','images/tile2.png']
+test_room = levelcreation.Room(size,pos,floor_images)
+#test_room.addBlock(test)
+#test_room.addBlock(test1)
+for i in test_room.blocks:
+    screen.blit(i.image, i.rect)
 
-
+#screen.blit(test_room.blocks[*].image, test_room.blocks[*].rect)
+#screen.blit(test_room.blocks[0].image, test_room.blocks[0].rect)
 
 
 while 1:

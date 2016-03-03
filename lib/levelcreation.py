@@ -4,6 +4,8 @@ import pygame
 import random
 
 WHITE = (255,255,255)
+LEVEL_SIZE = 1000
+ROOM_SIZE = 10
 
 def testcall():
     print("successfully called testcall in lib/levelcreation.py")
@@ -33,5 +35,20 @@ class Room:
         self.size = size
         self.topleft = topleft
         self.floor_images = floor_images 
-        test = Block('images/tile0.png', pos)
-        self.blocks.append(test)
+        # create randomized room
+        rndx = random.randint(2,ROOM_SIZE)
+        rndy = random.randint(2,ROOM_SIZE)
+        self.size = [rndx,rndy]
+        for x in range(0,rndx):
+            for y in range(0,rndy):
+                # get random image to create new block and add to blocks
+                rnd_image = random.randint(0,len(floor_images)-1)
+                newx = topleft[0] + 10*x 
+                newy = topleft[1] + 10*y 
+                self.blocks.append(Block(floor_images[rnd_image],[newx,newy]))
+
+
+
+
+    def addBlock(self, block):
+        self.blocks.append(block)
