@@ -49,6 +49,7 @@ room_list = []
 #if ((npos_e[0] >= cpos_s[0]) and (npos_s[0] <= cpos_e[0])) or ((npos_e[1] >= cpos_s[1]) and (npos_s[1] <= cpos_e[1])):
 #cpos_s = check_room.topleft
 #cpos_e = [cpos_s[0]+check_room.size[0],cpos_s[1]+check_room.size[1]]
+room_check = []
 for i in range(0,num_rooms):
     #Create new room at random coords
     rndx = random.randint(0,levelcreation.LEVEL_SIZE)
@@ -63,7 +64,27 @@ for i in range(0,num_rooms):
         for b in nroom.blocks:
             b.changeImage('images/tile1.png')
     else:
-        room_list.append(nroom)
+        if len(room_check) == 0 :
+            room_check.append(nroom)
+            room_list.append(nroom)
+        else:
+            # check for existing room violation -- loop through previously added rooms
+            no_conflict = True
+            for c_room in room_check:
+                cpos_s = c_room.topleft
+                cpos_e = [cpos_s[0]+(c_room.size[0]*levelcreation.BLOCK_SIZE),cpos_s[1]+(c_room.size[1]*levelcreation.BLOCK_SIZE)]
+                #TODO add margin of separation between rooms
+                if ((npos_e[0] >= cpos_s[0]) and (npos_s[0] <= cpos_e[0])) or ((npos_e[1] >= cpos_s[1]) and (npos_s[1] <= cpos_e[1])):
+                    print "block violation on attempt %d" % i
+                    no_conflict = False
+
+            if no_conflict == True:
+                room_check.append(nroom)
+                room_list.append(nroom)
+
+        # check for existing room violation
+        #room_list.append(nroom)
+
 
 
 # display all rooms in room_list
