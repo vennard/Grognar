@@ -4,6 +4,7 @@ import pygame
 import random
 from lib import levelcreation
 
+'''
 parser = argparse.ArgumentParser(description='A Nethack inspired poor excuse for a game')
 parser.add_argument('-d', action="store_true", default=False, dest='debug_mode', help='debug mode on')
 args = parser.parse_args()
@@ -11,6 +12,7 @@ DEBUG = False
 if args.debug_mode == True:
     print 'debug mode on'
     DEBUG = True
+    '''
 
 # test call to all aux scripts
 print("Startin TEST ZONE script -- YOU ARE IN DEBUG / TEST MODE")
@@ -50,9 +52,9 @@ for i in test_room.blocks:
 #screen.blit(test_room.blocks[0].image, test_room.blocks[0].rect)
 
 #TODO testing multiple room creation and smart placement
-num_rooms = 100
+num_rooms = 10
 #num_rooms = random.randint(1,10)
-floor_images = ['images/tile0.png','images/tile1.png','images/tile2.png','images/tile3.png','images/tile4.png']
+floor_images = ['images/floor_tiles/tile0.png','images/floor_tiles/tile1.png','images/floor_tiles/tile2.png','images/floor_tiles/tile3.png','images/floor_tiles/tile4.png']
 room_list = []
 #if ((npos_e[0] >= cpos_s[0]) and (npos_s[0] <= cpos_e[0])) or ((npos_e[1] >= cpos_s[1]) and (npos_s[1] <= cpos_e[1])):
 #cpos_s = check_room.topleft
@@ -69,8 +71,6 @@ for i in range(0,num_rooms):
     # check for screen size violation
     if (npos_e[0] >= levelcreation.LEVEL_SIZE) or (npos_e[1] >= levelcreation.LEVEL_SIZE):
         print "screen size violation on attempt %d" % i 
-        for b in nroom.blocks:
-            b.changeImage('images/tile1.png')
     else:
         if len(room_check) == 0 :
             room_check.append(nroom)
@@ -92,6 +92,16 @@ for i in range(0,num_rooms):
 
         # check for existing room violation
         #room_list.append(nroom)
+
+# TODO testing add walls
+for room in room_list:
+    # lay border of block tile5.img
+    wallxy = [room.topleft[0]-levelcreation.BLOCK_SIZE, room.topleft[1]-levelcreation.BLOCK_SIZE] 
+    for x in range(0,room.size[0]):
+        for y in range(0,room.size[1]):
+
+    new_room_block = levelcreation.Block('images/floor_tiles/tile5.png',wallxy)
+    room.addBlock(new_room_block)
 
 
 
