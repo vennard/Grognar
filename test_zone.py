@@ -108,16 +108,91 @@ for rr in room_check:
             if ((xval > 0) and (xval < rr.size[0])) and ((yval > 0) and (yval < rr.size[1])):
                 continue
             newxy = [sxy[0] + xval*levelcreation.BLOCK_SIZE,sxy[1] + yval*levelcreation.BLOCK_SIZE]
-            print "final val" + str(newxy)
+            #print "final val" + str(newxy)
             newblock = levelcreation.Block('images/floor_tiles/tile5.png',newxy)
-            rr.addBlock(newblock)
+            rr.topleft = [rr.topleft[0]-10,rr.topleft[1]-10]
+            rr.size = [rr.size[0]+10,rr.size[1]+10]
+            rr.addWall(newblock)
 
+# TODO testing hallway add
+hallways = []
+hallway_image = 'images/floor_tiles/tile5.png'
+hallways_connected = False
+while hallways_connected == False:
+    '''
+     Plan for hallway 'algorithm'
+        1.Get wall coords from room (not corner)
+        2.Convert to doorway and pick room to connect to
+            a.Pick room using closest side to doorway
+        3.build hallway (TODO room conflicts) using random y x movement
+            a.must exit on meeting target room 
+            b.mark both rooms connected
+        4.check for all rooms connected to exit
+    '''
+    for nr in room_check:
+        if nr.connected == False:
+            sel_room = nr
+            break
+    #get wall coords
+    wallblock = sel_room.wallblocks[0]
+    rndxy = wallblock.rect.topleft
+    #TODO picking dumb dest coords for testing
+    '''
+    dest_xy = [1000,1000]
+    crude_change = [rndxy[0]-dest_xy[0],rndxy[1]-dest_xy[1]]
+    # example [717-1000 = -283,8-1000=-9992]
+    if crude_change < [0,0]:
+        numtoadd = random.randint(3,10)
+        for j in range(0,numtoadd):
+            print "add hallway"
+            bb = levelcreation.Block(hallway_image,[rndxy[0]+(j*10),rndxy[1]])
+            hallways.append(bb)
+    '''
+    destxy = [1000,1000]
+    currxy = rndxy
+    connect_test = False
+    while connect_test == False:
+        print "loopping"
+        addval = random.randint(4,10)
+        xory = random.randint(0,1)
+        newcurr = currxy
+        if ((currxy[0]+(addval*10)) > destxy[0]) and ((currxy[1]+(addval*10)) > destxy[1]):
+            connect_test = True
+        elif (currxy[0]+(addval*10)) > destxy[0]:
+            xory = 1
+        elif (currxy[1]+(addval*10)) > destxy[1]: 
+            xory = 0
+
+        if xory == 0: # x chosen
+            for j in range(1,addval):
+                newcur = [currxy[0]+(j*10),currxy[1]]
+                bb = levelcreation.Block(hallway_image,newcur)
+                hallways.append(bb)
+        else: # y chosen
+            for j in range(1,addval):
+                newcur = [currxy[0],currxy[1]+(j*10)]
+                bb = levelcreation.Block(hallway_image,newcur)
+                hallways.append(bb)
+        currxy = newcur
+        if currxy > destxy:
+            connect_test = True
+
+
+
+
+    print "test done"
+    hallways_connected = True
+    # TODO don't forget check for hallways connected to exit loop
 
 
 # display all rooms in room_list
 for room in room_check:
     for k in room.blocks:
         screen.blit(k.image, k.rect)
+
+# display all hallways
+for hall in hallways:
+    screen.blit(hall.image,hall.rect)
 
 while 1:
     for event in pygame.event.get():

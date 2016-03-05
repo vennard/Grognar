@@ -30,7 +30,9 @@ class Room:
     #these are class attributes applied to all instances of this class used without self.
 
     def __init__(self, topleft, floor_images):
+        self.connected = False
         self.blocks = [] # initialize empty block list
+        self.wallblocks = []
         self.topleft = topleft
         self.floor_images = floor_images 
         # create randomized room
@@ -48,3 +50,5 @@ class Room:
     def addBlock(self, block):
         self.blocks.append(block)
 
+    def addWall(self,block):
+        self.wallblocks.append(block)
