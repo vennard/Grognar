@@ -12,7 +12,7 @@ DEBUG = False
 if args.debug_mode == True:
     print 'debug mode on'
     DEBUG = True
-    '''
+'''
 
 # test call to all aux scripts
 print("Startin TEST ZONE script -- YOU ARE IN DEBUG / TEST MODE")
@@ -55,7 +55,6 @@ for i in test_room.blocks:
 num_rooms = 10
 #num_rooms = random.randint(1,10)
 floor_images = ['images/floor_tiles/tile0.png','images/floor_tiles/tile1.png','images/floor_tiles/tile2.png','images/floor_tiles/tile3.png','images/floor_tiles/tile4.png']
-room_list = []
 #if ((npos_e[0] >= cpos_s[0]) and (npos_s[0] <= cpos_e[0])) or ((npos_e[1] >= cpos_s[1]) and (npos_s[1] <= cpos_e[1])):
 #cpos_s = check_room.topleft
 #cpos_e = [cpos_s[0]+check_room.size[0],cpos_s[1]+check_room.size[1]]
@@ -74,7 +73,6 @@ for i in range(0,num_rooms):
     else:
         if len(room_check) == 0 :
             room_check.append(nroom)
-            room_list.append(nroom)
         else:
             # check for existing room violation -- loop through previously added rooms
             no_conflict = True
@@ -88,29 +86,38 @@ for i in range(0,num_rooms):
 
             if no_conflict == True:
                 room_check.append(nroom)
-                room_list.append(nroom)
-
-        # check for existing room violation
-        #room_list.append(nroom)
 
 # TODO testing add walls
-for room in room_list:
+'''
+for sroom in room_list:
     # lay border of block tile5.img
-    wallxy = [room.topleft[0]-levelcreation.BLOCK_SIZE, room.topleft[1]-levelcreation.BLOCK_SIZE] 
-    for x in range(0,room.size[0]):
-        for y in range(0,room.size[1]):
-
-    new_room_block = levelcreation.Block('images/floor_tiles/tile5.png',wallxy)
-    room.addBlock(new_room_block)
+    #wallxy = [room.topleft[0]-levelcreation.BLOCK_SIZE, room.topleft[1]-levelcreation.BLOCK_SIZE] 
+    for x in range(0,sroom.size[0]):
+        for y in range(0,sroom.size[1]):
+            startx = sroom.topleft[0]-levelcreation.BLOCK_SIZE
+            starty = sroom.topleft[1]-levelcreation.BLOCK_SIZE
+            newx = startx + (levelcreation.BLOCK_SIZE*x)
+            newy = starty + (levelcreation.BLOCK_SIZE*y)
+            sroom.addBlock(levelcreation.Block('images/floor_tiles/tile5.png',[newx,newy])
+            '''
+for rr in room_check:
+    sxy = [rr.topleft[0]-levelcreation.BLOCK_SIZE,rr.topleft[1]-levelcreation.BLOCK_SIZE]
+    print "testing" + str(sxy)
+    for xval in range(0,rr.size[0]+1):
+        for yval in range(0,rr.size[1]+1):
+            if ((xval > 0) and (xval < rr.size[0])) and ((yval > 0) and (yval < rr.size[1])):
+                continue
+            newxy = [sxy[0] + xval*levelcreation.BLOCK_SIZE,sxy[1] + yval*levelcreation.BLOCK_SIZE]
+            print "final val" + str(newxy)
+            newblock = levelcreation.Block('images/floor_tiles/tile5.png',newxy)
+            rr.addBlock(newblock)
 
 
 
 # display all rooms in room_list
-for room in room_list:
+for room in room_check:
     for k in room.blocks:
         screen.blit(k.image, k.rect)
-
-
 
 while 1:
     for event in pygame.event.get():
