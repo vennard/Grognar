@@ -165,7 +165,7 @@ class Hall:
                     hallway_connected = True
                 rnd_hall_image = random.choice(self.floor_images)
                 new_hall_block = Block(rnd_hall_image,newxy)
-                self.wallblocks.append(new_hall_block)
+                self.blocks.append(new_hall_block)
             currxy = newxy
             # check for more basic end condition TODO change of delta 
             

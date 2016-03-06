@@ -216,9 +216,18 @@ while humble_start == False:
 
 '''
 
-# TODO test out "better" wall and hallway creation
+# test out "better" wall and hallway creation
 for room in room_check:
     room.addWalls('images/floor_tiles/tile5.png')
+
+# TODO call test hallway stuff
+hallways = []
+image = ['images/floor_tiles/tile5.png']
+startxy = [0,0]
+dest_room = random.choice(room_check)
+destxy = random.choice(dest_room.wallblocks).rect.topleft
+newhall = levelcreation.Hall(startxy, destxy, image,dest_room)
+hallways.append(newhall)
 
 # display all rooms in room_list
 for room in room_check:
@@ -228,8 +237,9 @@ for room in room_check:
         screen.blit(k.image, k.rect)
 
 # display all hallways
-#for hall in hallways:
-#    screen.blit(hall.image,hall.rect)
+for hall in hallways:
+    for k in hall.blocks:
+        screen.blit(k.image,k.rect)
 
 while 1:
     for event in pygame.event.get():
