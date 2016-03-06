@@ -59,11 +59,12 @@ floor_images = ['images/floor_tiles/tile0.png','images/floor_tiles/tile1.png','i
 #cpos_s = check_room.topleft
 #cpos_e = [cpos_s[0]+check_room.size[0],cpos_s[1]+check_room.size[1]]
 room_check = []
+id_val = 0
 for i in range(0,num_rooms):
     #Create new room at random coords
     rndx = random.randint(0,levelcreation.LEVEL_SIZE)
     rndy = random.randint(0,levelcreation.LEVEL_SIZE)
-    nroom = levelcreation.Room([rndx,rndy],floor_images)
+    nroom = levelcreation.Room(id_val,[rndx,rndy],floor_images)
     npos_s = nroom.topleft
     npos_e = [npos_s[0]+(nroom.size[0]*levelcreation.BLOCK_SIZE),npos_s[1]+(nroom.size[1]*levelcreation.BLOCK_SIZE)]
     print "adding room %d at x=%d and y=%d with xend=%d and yend=%d" % (i,rndx,rndy,npos_e[0],npos_e[1])
@@ -86,6 +87,7 @@ for i in range(0,num_rooms):
 
             if no_conflict == True:
                 room_check.append(nroom)
+                id_val = id_val + 1
 
 # TODO testing add walls
 '''
@@ -221,16 +223,22 @@ for room in room_check:
     room.addWalls('images/floor_tiles/tile5.png')
 
 # TODO call test hallway stuff
+'''
 hallways = []
 image = ['images/floor_tiles/tile5.png']
 startxy = [0,0]
 dest_room = random.choice(room_check)
 destxy = random.choice(dest_room.wallblocks).rect.topleft
-newhall = levelcreation.Hall(startxy, destxy, image,dest_room)
+newhall = levelcreation.Hall(startxy, levelcreation.DOWN, destxy, image,dest_room)
 hallways.append(newhall)
+'''
+levelcreation.rooms = room_check
+hallways = []
+image = ['images/floor_tiles/tile5.png']
+hallways = levelcreation.createHallways(image)
 
 # display all rooms in room_list
-for room in room_check:
+for room in levelcreation.rooms:
     for k in room.blocks:
         screen.blit(k.image, k.rect)
     for k in room.wallblocks:

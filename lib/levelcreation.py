@@ -9,13 +9,15 @@ MAX_ROOM_SIZE = 20
 MIN_ROOM_SIZE = 3
 MAX_HALL_SIZE = 8
 MIN_HALL_SIZE = 2
-HALLWAY_THRESH = 8 # threshold for slowing down approach on hallway creation
+HALLWAY_THRESH = 75 # threshold for slowing down approach on hallway creation
 BLOCK_SIZE = 10
 # Direction defines used to modify multiplicants when adding coords
 RIGHT = [1,0]
 LEFT = [-1,0]
 UP = [0,1]
 DOWN = [0,-1]
+
+rooms = [] # holds all rooms for level
 
 def testcall():
     print("successfully called testcall in lib/levelcreation.py")
@@ -42,7 +44,8 @@ class Block(pygame.sprite.Sprite):
 class Room:
     #NOTE: class attributes applied to all instances of this class used without self.
 
-    def __init__(self, topleft, floor_images):
+    def __init__(self, id_num, topleft, floor_images):
+        self.ID = id_num 
         self.connected = False
         self.blocks = [] # initialize empty block list
         self.wallblocks = []
@@ -113,17 +116,19 @@ class Room:
 
 class Hall:
     ''' when hall is created its only goal is to connect startxy and destxy '''
-    def __init__(self, startxy, destxy, images, dest_room):
+    def __init__(self, startxy, start_direction, destxy, images, dest_room):
         self.blocks = [] # initialize empty block list
         self.wallblocks = [] 
         self.floor_images = images
 
+        print "CREATING NEW HALL"
         # generate hallway
         currxy = startxy # holds current xy variable as hallway moves along during creation
         first_run = True 
         hallway_connected = False
         max_hall = MAX_HALL_SIZE
         min_hall = MIN_HALL_SIZE
+        original_direction = [0,0]
         threshold_level = 0
         while hallway_connected == False:
             # calculate delta to destination from start using list comprehension
@@ -131,6 +136,14 @@ class Hall:
             # if first section made then choose direction based on right,left,top,bottom property of wall block
             if first_run == True:
                 direction = start_direction  
+                if diffxy[0] < 0:
+                    original_direction[0] = RIGHT
+                else:
+                    original_direction[0] = LEFT
+                if diffxy[1] < 0:
+                    original_direction[1] = UP
+                else:
+                    original_direction[1] = DOWN
                 first_run = False
             else:
                 xory = random.randint(0,1) # pick x or y - consider weighting based off large delta (between x or y)
@@ -146,20 +159,20 @@ class Hall:
                     else:
                         direction = DOWN
             # check for near end condition 
-            new_diffxy = [cur - des for cur, des in zip(currxy,destxy)]
-            if (abs(new_diffxy[0]) > HALLWAY_THRESH) or (abs(new_diffxy[1]) > HALLWAY_THRESH):
-                print "lowering hallway section creation to try and narrow in on destination"
-                ++threshold_level
-                if threshold_level > MAX_HALL_SIZE-2:
-                    threshold_level = MAX_HALL_SIZE-2
+            #if (abs(diffxy[0]) < HALLWAY_THRESH) and (abs(diffxy[1]) < HALLWAY_THRESH):
+            if abs(diffxy[0]) + abs(diffxy[1]) < HALLWAY_THRESH:
+                threshold_level = threshold_level + 1
                 max_hall = max_hall - threshold_level
-                min_hall = 1
+                min_hall = min_hall - threshold_level
+                if max_hall < 3:
+                    max_hall = 3
+                if min_hall < 2:
+                    min_hall = 2
+                print "threshold zone " + str(threshold_level) + "with diffxy " + str(diffxy)
             section_length = random.randint(min_hall,max_hall)
             # create hallway and update variables
             for i in range(0,section_length):
-                # TODO while placing hallway blocks must check for collisions
-                # 1. Collision with dest in which case halt successfully
-                # 2. maybe implement collision with rooms -- TODO
+                # while placing hallway blocks must check for collisions
                 newxy = [currxy[0] + (direction[0]*i*BLOCK_SIZE),currxy[1] + (direction[1]*i*BLOCK_SIZE)]
                 if dest_room.contains(newxy) == True:
                     hallway_connected = True
@@ -168,59 +181,107 @@ class Hall:
                 self.blocks.append(new_hall_block)
             currxy = newxy
             # check for more basic end condition TODO change of delta 
-            
-
-
-
+            stop = 0
+            if (diffxy[0] < 0) and (original_direction[0] == LEFT):
+                stop = stop + 1
+            if (diffxy[0] > 0) and (original_direction[0] == RIGHT):
+                stop = stop + 1
+            if (diffxy[1] < 0) and (original_direction[1] == DOWN):
+                stop = stop + 1
+            if (diffxy[1] > 0) and (original_direction[1] == UP):
+                stop = stop + 1
+            if stop >= 2:
+                hallway_connected = True
+                print "stop value is " + str(stop)
+            # TODO add hallway cleanup and doorways
 
 
 # Loops until all rooms are connected, must be run after rooms are created
-def createHallways(images, rooms):
-    # global defaults for method TODO return saved_rooms to replace previous (needs updates)
-    saved_rooms = rooms
-    
+def createHallways(images):
     # main loop waiting for all hallways to be connected
     created_all_hallways = False
     hallways_made = 0
     hallways = [] # TODO replaces above and must return along with rooms
     while created_all_hallways == False:
-
         # pick start and dest room
         startxy, destxy = [[0,0],[0,0]]
         start_direction, dest_direction = [None,None] # holds right, left, top, bot for 
-        valid = [False,False]
-        for start_room in saved_rooms:
-            if start_room.connected == True:
-                continue
-            wallblock = random.choice(start_room.wallblocks)
-            startxy = wallblock.rect.topleft
-            start_direction = wallblock.side
-            valid[0] = True
-        for dest_room in saved_rooms:
-            if dest_room.connected == True:
-                continue
-            wallblock = random.choice(dest_room.wallblocks)
-            destxy = wallblock.rect.topleft
-            dest_direction = wallblock.size
-            valid[1] = True
-        # special condition when left to 1 unconnected room
-        if (valid[0] == False) or (valid[1] == False):
-            print "down to the end of rooms to connected"
-            if (valid[0] == False) and (valid[1] == False): # special case I guess TODO
-                print "both valid variables are false - no rooms left to connect? should i be here?"
-            if valid[0] == False:
-                # need to find a valid startxy
-                print "have you ever seen me? REMOVE THIS PLEASE"
-            else:
-                # need to find a valid destxy should always be this one
-                # TODO implement properly by picking random room excluding startxy room
-                destxy = random.choice(random.choice(saved_rooms).wallblocks).rect.topleft
-                valid[1] = True
-        print "got to the end of picking startxy and destxy valid looks like: " + str(valid)
-        print "startxy = " + str(startxy)
-        print "destxy = " + str(destxy)
-        new_hall = Hall(startxy,destxy,images)
+        startid = 0 
+        # assurance on choosing rooms
+        start_room_chosen = False
+        if len(rooms) < 3:
+            print "must have more then 2 rooms"
+            exit()
+        while start_room_chosen == False:
+            for room in rooms:
+                if room.connected == False:
+                    # found an unconnected room aka the best option
+                    start_room = room
+                    start_room_chosen = True
+                    room.connected = True
+                    startid = room.ID
+            # policy is if no unconnected rooms exist there should be no start room...
+            if start_room_chosen == False:
+                start_room = random.choice(rooms)
+                start_room_chosen = True
+                startid = room.ID
+                print "start room not finding unconnected room - chosen random one with id " + str(startid)
+            
+        # assurance finding destination room
+        dest_room_chosen = False
+        while dest_room_chosen == False:
+            for room in rooms:
+                if room.connected == False:
+                    dest_room = room
+                    dest_room_chosen = True
+                    room.connected = True
+            if dest_room_chosen == False:
+                print "no available unconnected rooms for dest so picking random one"
+                rnd_room = random.choice(rooms)
+                if rnd_room.ID == startid:
+                    print "youre trying to grab the same room again dammit"
+                    continue
+                else:
+                    dest_room = rnd_room
+                    dest_room_chosen = True
 
+        # choose near sided walls to generate startxy and destxy on
+        startxy = start_room.topleft
+        destxy = dest_room.topleft
+        # find closest startxy first
+        # startxy - destxy = deltaxy or exp if -13,0 we need to go +x to reach dest
+        '''
+        example: startxy = [8,0] destxy = [4,6]
+            delta = startxy - destxy
+        1: delta = [4,-6] newxy 10,0 
+        1: delta = 6, -6
+        
+        '''
+        prev = 2000
+        for wallblock in start_room.wallblocks:
+            delta = [x - y for x, y in zip(wallblock.rect.topleft,destxy)]
+            val = abs(delta[0]) + abs(delta[1])
+            if val < prev:
+                prev = val
+                startxy = wallblock.rect.topleft
+                start_direction = wallblock.side
+        prev = 2000
+        for wallblock in dest_room.wallblocks:
+            delta = [x - y for x, y in zip(wallblock.rect.topleft,startxy)]
+            val = abs(delta[0]) + abs(delta[1])
+            if val < prev:
+                prev = val
+                destxy = wallblock.rect.topleft
+
+        print "startxy = " + str(startxy)
+        print "destxy= " + str(destxy)
+        new_hall = Hall(startxy, start_direction, destxy, images, dest_room)
+        hallways.append(new_hall)
+        hallways_made = hallways_made + 1
+        if hallways_made >= 16:
+            created_all_hallways = True
+        print "HALLWAYS CREATED " + str(hallways_made)
+    return hallways
         
 
                 
