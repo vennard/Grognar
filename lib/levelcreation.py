@@ -49,6 +49,3 @@ class Room:
 
     def addBlock(self, block):
         self.blocks.append(block)
-
-    def addWall(self,block):
-        self.wallblocks.append(block)
