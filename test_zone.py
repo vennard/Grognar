@@ -52,25 +52,27 @@ for i in test_room.blocks:
 #screen.blit(test_room.blocks[0].image, test_room.blocks[0].rect)
 
 #TODO testing multiple room creation and smart placement
-num_rooms = 10
+num_rooms = 20
 #num_rooms = random.randint(1,10)
 floor_images = ['images/floor_tiles/tile0.png','images/floor_tiles/tile1.png','images/floor_tiles/tile2.png','images/floor_tiles/tile3.png','images/floor_tiles/tile4.png']
 #if ((npos_e[0] >= cpos_s[0]) and (npos_s[0] <= cpos_e[0])) or ((npos_e[1] >= cpos_s[1]) and (npos_s[1] <= cpos_e[1])):
 #cpos_s = check_room.topleft
 #cpos_e = [cpos_s[0]+check_room.size[0],cpos_s[1]+check_room.size[1]]
 room_check = []
-id_val = 0
-for i in range(0,num_rooms):
+number_rooms = 0
+while number_rooms < 5:
+#for i in range(0,num_rooms):
     #Create new room at random coords
     rndx = random.randint(0,levelcreation.LEVEL_SIZE)
     rndy = random.randint(0,levelcreation.LEVEL_SIZE)
-    nroom = levelcreation.Room(id_val,[rndx,rndy],floor_images)
+    nroom = levelcreation.Room([rndx,rndy],floor_images)
     npos_s = nroom.topleft
     npos_e = [npos_s[0]+(nroom.size[0]*levelcreation.BLOCK_SIZE),npos_s[1]+(nroom.size[1]*levelcreation.BLOCK_SIZE)]
-    print "adding room %d at x=%d and y=%d with xend=%d and yend=%d" % (i,rndx,rndy,npos_e[0],npos_e[1])
+    #print "adding room %d at x=%d and y=%d with xend=%d and yend=%d" % (i,rndx,rndy,npos_e[0],npos_e[1])
     # check for screen size violation
     if (npos_e[0] >= levelcreation.LEVEL_SIZE) or (npos_e[1] >= levelcreation.LEVEL_SIZE):
-        print "screen size violation on attempt %d" % i 
+        pass
+        #print "screen size violation on attempt %d" % i 
     else:
         if len(room_check) == 0 :
             room_check.append(nroom)
@@ -82,12 +84,12 @@ for i in range(0,num_rooms):
                 cpos_e = [cpos_s[0]+(c_room.size[0]*levelcreation.BLOCK_SIZE),cpos_s[1]+(c_room.size[1]*levelcreation.BLOCK_SIZE)]
                 #TODO add margin of separation between rooms
                 if ((npos_e[0] >= cpos_s[0]) and (npos_s[0] <= cpos_e[0])) or ((npos_e[1] >= cpos_s[1]) and (npos_s[1] <= cpos_e[1])):
-                    print "block violation on attempt %d" % i
+                    #print "block violation on attempt %d" % i
                     no_conflict = False
 
             if no_conflict == True:
                 room_check.append(nroom)
-                id_val = id_val + 1
+                number_rooms += 1
 
 # TODO testing add walls
 '''

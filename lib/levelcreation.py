@@ -44,8 +44,7 @@ class Block(pygame.sprite.Sprite):
 class Room:
     #NOTE: class attributes applied to all instances of this class used without self.
 
-    def __init__(self, id_num, topleft, floor_images):
-        self.ID = id_num 
+    def __init__(self, topleft, floor_images):
         self.connected = False
         self.blocks = [] # initialize empty block list
         self.wallblocks = []
@@ -219,12 +218,10 @@ def createHallways(images):
                     start_room = room
                     start_room_chosen = True
                     room.connected = True
-                    startid = room.ID
             # policy is if no unconnected rooms exist there should be no start room...
             if start_room_chosen == False:
                 start_room = random.choice(rooms)
                 start_room_chosen = True
-                startid = room.ID
                 print "start room not finding unconnected room - chosen random one with id " + str(startid)
             
         # assurance finding destination room
@@ -238,7 +235,7 @@ def createHallways(images):
             if dest_room_chosen == False:
                 print "no available unconnected rooms for dest so picking random one"
                 rnd_room = random.choice(rooms)
-                if rnd_room.ID == startid:
+                if rnd_room is start_room:
                     print "youre trying to grab the same room again dammit"
                     continue
                 else:
@@ -278,7 +275,7 @@ def createHallways(images):
         new_hall = Hall(startxy, start_direction, destxy, images, dest_room)
         hallways.append(new_hall)
         hallways_made = hallways_made + 1
-        if hallways_made >= 16:
+        if hallways_made >= 7:
             created_all_hallways = True
         print "HALLWAYS CREATED " + str(hallways_made)
     return hallways
