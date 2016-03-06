@@ -1,7 +1,7 @@
 #!/usr/bin/python2
 
 ''' Defines '''
-NUMBER_OF_ROOMS = 10
+NUMBER_OF_ROOMS = 7
 
 import argparse, pygame, random, os, sys, getopt
 from lib import levelcreation
@@ -46,17 +46,20 @@ while rooms_created < NUMBER_OF_ROOMS:
         continue
 
     # check for existing room violation 
+    no_conflict = True
     for rc in room_check:
         # get existing room dimensions
         cpos_s = rc.topleft
         cpos_e = [cpos_s[0]+(rc.size[0]*levelcreation.BLOCK_SIZE), cpos_s[1]+(rc.size[1]*levelcreation.BLOCK_SIZE)]
         # TODO add margin of separation between rooms
-        if ((npos_e[0] >= cpos_s[0]) and (npos_s[0] <= cpos_e[0])) or ((npos_e[1] >= cpos_s[1]) and (npos_s[1] <= cpos_e[1])):
-            continue
+        if ((npos_e[0] > cpos_s[0]) and (npos_s[0] < cpos_e[0])) or ((npos_e[1] > cpos_s[1]) and (npos_s[1] < cpos_e[1])):
+        #if ((npos_e[0] >= cpos_s[0]) and (npos_s[0] <= cpos_e[0])) or ((npos_e[1] >= cpos_s[1]) and (npos_s[1] <= cpos_e[1])):
+            no_conflict = False
 
     # TODO add walls and check for conlficts... conflicts here can reset room creation
-    room_check.append(new_room)
-    rooms_created = rooms_created + 1
+    if no_conflict == True:
+        room_check.append(new_room)
+        rooms_created = rooms_created + 1
 
 # TODO create hallways -- use similar while loop as above
 

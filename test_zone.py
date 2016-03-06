@@ -99,7 +99,8 @@ for sroom in room_list:
             newx = startx + (levelcreation.BLOCK_SIZE*x)
             newy = starty + (levelcreation.BLOCK_SIZE*y)
             sroom.addBlock(levelcreation.Block('images/floor_tiles/tile5.png',[newx,newy])
-            '''
+'''
+'''
 for rr in room_check:
     sxy = [rr.topleft[0]-levelcreation.BLOCK_SIZE,rr.topleft[1]-levelcreation.BLOCK_SIZE]
     print "testing" + str(sxy)
@@ -114,34 +115,58 @@ for rr in room_check:
             rr.size = [rr.size[0]+10,rr.size[1]+10]
             rr.addBlock(newblock)
             rr.wallblocks.append(newblock)
-
+'''
+'''
 # TODO testing hallway add
 hallways = []
 hallway_image = 'images/floor_tiles/tile5.png'
 humble_start = False
 # calculate startxy and destxy
 #startxy = room_check[random.randint(0,len(room_check))].wallblocks[random.randint(0,len(room_check.wallblocks))].rect.topleft
-getroom = room_check[random.randint(0,len(room_check)-1)]
-getwallblocks = getroom.wallblocks
-getwallblock = getwallblocks[random.randint(0,len(getwallblocks)-1)]
-startxy = getwallblock.rect.topleft
+startxy = [0,0]
+got_valid_room = False
+while got_valid_room == False:
+    ran_sel = random.randint(0,len(room_check)-1)
+    getroom = room_check[ran_sel]
+    getwallblocks = getroom.wallblocks
+    getwallblock = getwallblocks[random.randint(0,len(getwallblocks)-1)]
+    startxy = getwallblock.rect.topleft
+    if getroom.connected == False:
+        room_check[ran_sel].connected = True
+        got_valid_room = True
 
-getroom = room_check[random.randint(0,len(room_check)-1)]
-getwallblocks = getroom.wallblocks
-getwallblock = getwallblocks[random.randint(0,len(getwallblocks)-1)]
-destxy = getwallblock.rect.topleft
+
+
+destxy = [0,0]
+got_valid_room = False
+while got_valid_room == False:
+    ran_sel = random.randint(0,len(room_check)-1)
+    getroom = room_check[ran_sel]
+    getwallblocks = getroom.wallblocks
+    getwallblock = getwallblocks[random.randint(0,len(getwallblocks)-1)]
+    destxy = getwallblock.rect.topleft
+    if getroom.connected == False:
+        room_check[ran_sel].connected = True
+        got_valid_room = True
 
 #destxy = room_check[random.randint(0,len(room_check))].wallblocks[random.randint(0,len(room_check.wallblocks))].rect.topleft
 currxy = startxy
 touched = False
 x_start_var = 1
 y_start_var = 1
+print "startxy = " + str(startxy) + " and destxy = " + str(destxy)
+'''
+'''
+TODO - #1: Room interception checks for hallways
+       #2: Overall loop
+       #3: Refinement (prevent multiple same direction builds)
+       #4: Add doorway
 while humble_start == False:
     addval = random.randint(4,10)
     xory = random.randint(0,1)
     # zip stops when first iterable is exhausted -- USING LIST COMPREHENSION
     diffxy = [cur - des for cur, des in zip(currxy,destxy)]
-    print "THIS IS DIFXY " + str(diffxy)
+    #print "THIS IS DIFXY " + str(diffxy)
     #diffxy = (currxy - destxy)
     if xory == 0: # x chosen
         if diffxy[0] < 0: # negative diff means we need to go pos
@@ -189,17 +214,22 @@ while humble_start == False:
     
         
 
+'''
 
-
+# TODO test out "better" wall and hallway creation
+for room in room_check:
+    room.addWalls('images/floor_tiles/tile5.png')
 
 # display all rooms in room_list
 for room in room_check:
     for k in room.blocks:
         screen.blit(k.image, k.rect)
+    for k in room.wallblocks:
+        screen.blit(k.image, k.rect)
 
 # display all hallways
-for hall in hallways:
-    screen.blit(hall.image,hall.rect)
+#for hall in hallways:
+#    screen.blit(hall.image,hall.rect)
 
 while 1:
     for event in pygame.event.get():
