@@ -54,7 +54,7 @@ class Level:
     ''' This class holds important level data '''
     def __init__(self):
         #load images
-        self.all_image_paths = loadImagePaths()
+        self.images = loadImagePaths()
         self.rooms = []
 
 class Block(pygame.sprite.Sprite):
@@ -90,13 +90,17 @@ class Room:
         rndx = random.randint(MIN_ROOM_SIZE,MAX_ROOM_SIZE)
         rndy = random.randint(MIN_ROOM_SIZE,MAX_ROOM_SIZE)
         self.size = [rndx,rndy]
+        # TODO choose theme for room
+        rnd_image = random.choice(floor_images)
+
         for x in range(0,rndx):
             for y in range(0,rndy):
                 # get random image to create new block and add to blocks
-                rnd_image = random.randint(0,len(floor_images)-1)
+                #rnd_image = random.randint(0,len(floor_images)-1)
                 newx = topleft[0] + BLOCK_SIZE*x 
                 newy = topleft[1] + BLOCK_SIZE*y 
-                self.blocks.append(Block(floor_images[rnd_image],[newx,newy]))
+                #self.blocks.append(Block(floor_images[rnd_image],[newx,newy]))
+                self.blocks.append(Block(rnd_image,[newx,newy]))
 
     def addBlock(self, block):
         self.blocks.append(block)
@@ -114,35 +118,36 @@ class Room:
         else:
             return True
 
-    def addWalls(self, image):
+    def addWalls(self, level):
+        # all_image_paths format - 3 -> 6
         # used to create walls around rooms - assumes margins are wide enough for placement from room creation
         #startxy = [top_left - block_size for top_left,block_size in zip(self.topleft,BLOCK_SIZE)]
         # create walls in order right, left, top, bottom
         startxy = [(self.topleft[0]+(self.size[0]*BLOCK_SIZE)),self.topleft[1]-BLOCK_SIZE]
         for y in range(0,self.size[1]+2): # creating right wall 
             newxy = [startxy[0], startxy[1] + (y*BLOCK_SIZE)]
-            newblock = Block(image,newxy)
+            newblock = Block(random.choice(level.images[3]),newxy)
             newblock.side = RIGHT
             newblock.collision_detect = True
             self.wallblocks.append(newblock)
         startxy = [self.topleft[0]-BLOCK_SIZE, self.topleft[1]-BLOCK_SIZE] 
         for y in range(0,self.size[1]+1): # creation left wall 
             newxy = [startxy[0], startxy[1] + (y*BLOCK_SIZE)]
-            newblock = Block(image,newxy)
+            newblock = Block(random.choice(level.images[4]),newxy)
             newblock.side = LEFT
             newblock.collision_detect = True
             self.wallblocks.append(newblock)
         startxy = [self.topleft[0]-BLOCK_SIZE, self.topleft[1]-BLOCK_SIZE] 
         for x in range(0,self.size[0]+1): # creation top wall 
             newxy = [startxy[0] + (x*BLOCK_SIZE), startxy[1]]
-            newblock = Block(image,newxy)
+            newblock = Block(random.choice(level.images[5]),newxy)
             newblock.side = UP 
             newblock.collision_detect = True
             self.wallblocks.append(newblock)
         startxy = [self.topleft[0]-BLOCK_SIZE, (self.topleft[1] + (self.size[1]*BLOCK_SIZE))] 
         for x in range(0,self.size[0]+2): # creation bottom wall 
             newxy = [startxy[0] + (x*BLOCK_SIZE), startxy[1]]
-            newblock = Block(image,newxy)
+            newblock = Block(random.choice(level.images[6]),newxy)
             newblock.side = DOWN
             newblock.collision_detect = True
             self.wallblocks.append(newblock)
