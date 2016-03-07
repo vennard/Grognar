@@ -3,6 +3,7 @@
 import pygame
 import random
 from lib import levelcreation
+from lib import imageloading
 
 '''
 parser = argparse.ArgumentParser(description='A Nethack inspired poor excuse for a game')
@@ -16,6 +17,9 @@ if args.debug_mode == True:
 
 # test call to all aux scripts
 print("Startin TEST ZONE script -- YOU ARE IN DEBUG / TEST MODE")
+imageloading.loadImages()
+exit()
+
 
 # initialize screen and background
 pygame.init()
@@ -45,7 +49,7 @@ test_room = levelcreation.Room(pos,floor_images)
 #test_room.addBlock(test1)
 for i in test_room.blocks:
     screen.blit(i.image, i.rect)
-    '''
+'''
 
 #screen.blit(test_room.blocks[*].image, test_room.blocks[*].rect)
 #screen.blit(test_room.blocks[0].image, test_room.blocks[0].rect)

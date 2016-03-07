@@ -30,23 +30,26 @@ all_image_paths format
 6 - wall down
 7 - test tiles
 '''
+
+def loadThemeImages(path):
+    # INPUT: give path to image type folder (ie floor_tiles) containing themes 
+    # OUTPUT: returns path to random themed room containing images
+    print("testing out easier image loading for grabbing themes later on")
+    themes = [path + name + '/' for name in os.listdir(path)]
+    return random.choice(themes)
+
+
 def loadImagePaths():
     print("attempting to load all images")
     path0='images/'
-    pathfloor = 'floor_tiles/'
-    pathdoor = 'door_tiles/'
-    pathitem = 'item_tiles/'
-    wallright = 'wall_tiles/RIGHT/'
-    wallleft = 'wall_tiles/LEFT/'
-    wallup = 'wall_tiles/UP/'
-    walldown = 'wall_tiles/DOWN/'
-    test = 'test_tiles/'
-    iarray = [pathfloor,pathdoor,pathitem,wallright,wallleft,wallup,walldown,test]
+    path_array = ['floor_tiles/','door_tiles/','item_tiles/','wall_tiles/RIGHT/','wall_tiles/LEFT/','wall_tiles/UP/','wall_tiles/DOWN/','test_tiles/']
+    iarray = [path0 + pt for pt in path_array] 
+    iarray[0] = loadThemeImages(iarray[0])
     image_paths = []
     for path1 in iarray:
-        image_names = os.listdir(path0 + path1)
+        image_names = os.listdir(path1)
         image_paths.append([path0 + path1 + name for name in image_names])
-    print "done loading image paths"
+    print "done loading image paths: " + str(image_paths)
     return image_paths
 
     
@@ -56,6 +59,9 @@ class Level:
         #load images
         self.images = loadImagePaths()
         self.rooms = []
+        self.hallways = []
+        self.items = []
+        self.mobs = []
 
 class Block(pygame.sprite.Sprite):
     '''This class represents the basic building blocks of the game level'''
@@ -90,17 +96,13 @@ class Room:
         rndx = random.randint(MIN_ROOM_SIZE,MAX_ROOM_SIZE)
         rndy = random.randint(MIN_ROOM_SIZE,MAX_ROOM_SIZE)
         self.size = [rndx,rndy]
-        # TODO choose theme for room
-        rnd_image = random.choice(floor_images)
-
         for x in range(0,rndx):
             for y in range(0,rndy):
                 # get random image to create new block and add to blocks
-                #rnd_image = random.randint(0,len(floor_images)-1)
+                rnd_image = random.randint(0,len(floor_images)-1)
                 newx = topleft[0] + BLOCK_SIZE*x 
                 newy = topleft[1] + BLOCK_SIZE*y 
-                #self.blocks.append(Block(floor_images[rnd_image],[newx,newy]))
-                self.blocks.append(Block(rnd_image,[newx,newy]))
+                self.blocks.append(Block(floor_images[rnd_image],[newx,newy]))
 
     def addBlock(self, block):
         self.blocks.append(block)
@@ -156,12 +158,14 @@ class Room:
 
 class Hall:
     ''' when hall is created its only goal is to connect startxy and destxy '''
+    # TODO add walls to hallway
+    # TODO cleanup overlap with rooms
+    # TODO add door at any intersection point with wall
     def __init__(self, startxy, start_direction, destxy, images, dest_room):
         self.blocks = [] # initialize empty block list
         self.wallblocks = [] 
         self.floor_images = images
 
-        print "CREATING NEW HALL"
         # generate hallway
         currxy = startxy # holds current xy variable as hallway moves along during creation
         first_run = True 
@@ -232,8 +236,6 @@ class Hall:
                 stop = stop + 1
             if stop >= 2:
                 hallway_connected = True
-                print "stop value is " + str(stop)
-            # TODO add hallway cleanup and doorways
 
 
 # Loops until all rooms are connected, must be run after rooms are created
@@ -274,6 +276,7 @@ def createHallways(images):
                     dest_room_chosen = True
                     room.connected = True
             if dest_room_chosen == False:
+                # TODO lies, ive seen unconnected rooms before -- what is happening?? FIX
                 print "no available unconnected rooms for dest so picking random one"
                 rnd_room = random.choice(rooms)
                 if rnd_room is start_room:
@@ -288,14 +291,8 @@ def createHallways(images):
         destxy = dest_room.topleft
         # find closest startxy first
         # startxy - destxy = deltaxy or exp if -13,0 we need to go +x to reach dest
-        '''
-        example: startxy = [8,0] destxy = [4,6]
-            delta = startxy - destxy
-        1: delta = [4,-6] newxy 10,0 
-        1: delta = 6, -6
-        
-        '''
-        prev = 2000
+
+        prev = max
         for wallblock in start_room.wallblocks:
             delta = [x - y for x, y in zip(wallblock.rect.topleft,destxy)]
             val = abs(delta[0]) + abs(delta[1])
@@ -303,7 +300,7 @@ def createHallways(images):
                 prev = val
                 startxy = wallblock.rect.topleft
                 start_direction = wallblock.side
-        prev = 2000
+        prev = max
         for wallblock in dest_room.wallblocks:
             delta = [x - y for x, y in zip(wallblock.rect.topleft,startxy)]
             val = abs(delta[0]) + abs(delta[1])
@@ -318,7 +315,6 @@ def createHallways(images):
         hallways_made = hallways_made + 1
         if hallways_made >= 7:
             created_all_hallways = True
-        print "HALLWAYS CREATED " + str(hallways_made)
     return hallways
         
 
