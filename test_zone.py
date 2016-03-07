@@ -16,7 +16,6 @@ if args.debug_mode == True:
 
 # test call to all aux scripts
 print("Startin TEST ZONE script -- YOU ARE IN DEBUG / TEST MODE")
-levelcreation.testcall()
 
 # initialize screen and background
 pygame.init()

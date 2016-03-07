@@ -57,10 +57,6 @@ class Level:
         self.all_image_paths = loadImagePaths()
         self.rooms = []
 
-
-def testcall():
-    print("successfully called testcall in lib/levelcreation.py")
-
 class Block(pygame.sprite.Sprite):
     '''This class represents the basic building blocks of the game level'''
     def __init__(self, image, pos):
@@ -72,7 +68,8 @@ class Block(pygame.sprite.Sprite):
         self.side = None # For wall property, contains: LEFT, RIGHT, TOP, BOT
 
         # initialize image and position
-        self.image = pygame.image.load(image).convert()
+        temp = pygame.image.load(image).convert()
+        self.image = pygame.transform.scale(temp,(BLOCK_SIZE,BLOCK_SIZE))
         self.rect = self.image.get_rect()
         self.rect.topleft = pos
 
