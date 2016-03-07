@@ -51,10 +51,14 @@ for i in test_room.blocks:
 #screen.blit(test_room.blocks[*].image, test_room.blocks[*].rect)
 #screen.blit(test_room.blocks[0].image, test_room.blocks[0].rect)
 
+# load all images
+level0 = levelcreation.Level()
+
+
 #TODO testing multiple room creation and smart placement
 num_rooms = 20
 #num_rooms = random.randint(1,10)
-floor_images = ['images/floor_tiles/tile0.png','images/floor_tiles/tile1.png','images/floor_tiles/tile2.png','images/floor_tiles/tile3.png','images/floor_tiles/tile4.png']
+#floor_images = ['images/floor_tiles/tile0.png','images/floor_tiles/tile1.png','images/floor_tiles/tile2.png','images/floor_tiles/tile3.png','images/floor_tiles/tile4.png']
 #if ((npos_e[0] >= cpos_s[0]) and (npos_s[0] <= cpos_e[0])) or ((npos_e[1] >= cpos_s[1]) and (npos_s[1] <= cpos_e[1])):
 #cpos_s = check_room.topleft
 #cpos_e = [cpos_s[0]+check_room.size[0],cpos_s[1]+check_room.size[1]]
@@ -65,7 +69,7 @@ while number_rooms < 5:
     #Create new room at random coords
     rndx = random.randint(0,levelcreation.LEVEL_SIZE)
     rndy = random.randint(0,levelcreation.LEVEL_SIZE)
-    nroom = levelcreation.Room([rndx,rndy],floor_images)
+    nroom = levelcreation.Room([rndx,rndy],level0.all_image_paths[0])
     npos_s = nroom.topleft
     npos_e = [npos_s[0]+(nroom.size[0]*levelcreation.BLOCK_SIZE),npos_s[1]+(nroom.size[1]*levelcreation.BLOCK_SIZE)]
     #print "adding room %d at x=%d and y=%d with xend=%d and yend=%d" % (i,rndx,rndy,npos_e[0],npos_e[1])
@@ -222,7 +226,7 @@ while humble_start == False:
 
 # test out "better" wall and hallway creation
 for room in room_check:
-    room.addWalls('images/floor_tiles/tile5.png')
+    room.addWalls('images/test_tiles/tile5.png')
 
 # TODO call test hallway stuff
 '''
@@ -236,8 +240,8 @@ hallways.append(newhall)
 '''
 levelcreation.rooms = room_check
 hallways = []
-image = ['images/floor_tiles/tile5.png']
-hallways = levelcreation.createHallways(image)
+#image = ['images/floor_tiles/tile5.png']
+hallways = levelcreation.createHallways(level0.all_image_paths[7])
 
 # display all rooms in room_list
 for room in levelcreation.rooms:

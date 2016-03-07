@@ -1,7 +1,6 @@
 # Contains methods and resources for level generation
 
-import pygame
-import random
+import pygame, random, os
 
 WHITE = (255,255,255)
 LEVEL_SIZE = 1000
@@ -17,7 +16,47 @@ LEFT = [-1,0]
 UP = [0,1]
 DOWN = [0,-1]
 
+
 rooms = [] # holds all rooms for level
+
+'''
+all_image_paths format
+0 - floor tiles
+1 - door tiles
+2 - item tiles
+3 - wall right 
+4 - wall left
+5 - wall up
+6 - wall down
+7 - test tiles
+'''
+def loadImagePaths():
+    print("attempting to load all images")
+    path0='images/'
+    pathfloor = 'floor_tiles/'
+    pathdoor = 'door_tiles/'
+    pathitem = 'item_tiles/'
+    wallright = 'wall_tiles/RIGHT/'
+    wallleft = 'wall_tiles/LEFT/'
+    wallup = 'wall_tiles/UP/'
+    walldown = 'wall_tiles/DOWN/'
+    test = 'test_tiles/'
+    iarray = [pathfloor,pathdoor,pathitem,wallright,wallleft,wallup,walldown,test]
+    image_paths = []
+    for path1 in iarray:
+        image_names = os.listdir(path0 + path1)
+        image_paths.append([path0 + path1 + name for name in image_names])
+    print "done loading image paths"
+    return image_paths
+
+    
+class Level:
+    ''' This class holds important level data '''
+    def __init__(self):
+        #load images
+        self.all_image_paths = loadImagePaths()
+        self.rooms = []
+
 
 def testcall():
     print("successfully called testcall in lib/levelcreation.py")
