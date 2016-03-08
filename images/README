@@ -1,0 +1,17 @@
+Strict naming conventions must be followed when adding files to the "images/" directory. See below:
+
+1. Types (floor,wallup,hall,etc)
+2. Theme (brick,stone,etc)
+3. Names (repeat type + number: ie floor0) 
+    # NOTE: assumes repeat type blocks under theme are chosen at random
+4. Action (action + number: ie run0 or moveup0)
+    # NOTE: 
+         _ proceeding action means start with this(ie _initial)
+           multiple _ mean choose one at random to use
+    #       otherwise assumed action
+    #       always loads "initial" action first
+5. action_images:
+    _ proceeding means stop animating after reaching that image
+        NOTE: _ proceeding action means its static or not updated (ie _initial)
+            multiple _ choose random one for start
+    names: number.png  assumed displayed in numerical order

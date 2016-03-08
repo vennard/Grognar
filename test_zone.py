@@ -18,6 +18,7 @@ if args.debug_mode == True:
 # test call to all aux scripts
 print("Startin TEST ZONE script -- YOU ARE IN DEBUG / TEST MODE")
 imageloading.loadImages()
+print str(imageloading.getActionImages('mob','glow','initial'))
 exit()
 
 
