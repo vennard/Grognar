@@ -111,6 +111,7 @@ def getActionImages(block_type, block_theme, block_action):
 
 def getRandomStartImage(block_type, block_theme, block_action):
     # grabs random start image chosen from all images with _ leading name 
+    # TODO add some protections here on poorly named files
     temp = []
     found_valid = False 
     for action_list in images:

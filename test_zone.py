@@ -28,6 +28,7 @@ exit()
 
 # initialize screen and background
 pygame.init()
+#screen = pygame.display.get_surface()
 screen = pygame.display.set_mode((1000,1000))
 pygame.display.set_caption('Basic Pygame Program')
 
@@ -59,9 +60,8 @@ for i in test_room.blocks:
 #screen.blit(test_room.blocks[*].image, test_room.blocks[*].rect)
 #screen.blit(test_room.blocks[0].image, test_room.blocks[0].rect)
 
-# load all images
-level0 = levelcreation.Level()
-
+#testing Level implementation
+#level0 = leLevel()
 
 #TODO testing multiple room creation and smart placement
 num_rooms = 20
@@ -234,7 +234,7 @@ while humble_start == False:
 
 # test out "better" wall and hallway creation
 for room in room_check:
-    room.addWalls(level0)
+    room.addWalls()
 
 # TODO call test hallway stuff
 '''

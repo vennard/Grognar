@@ -18,6 +18,8 @@ DOWN = [0,-1]
 
 
 rooms = [] # holds all rooms for level
+screen_width = 1000
+screen_height = 1000
 
 '''
 all_image_paths format
@@ -31,15 +33,72 @@ all_image_paths format
 7 - test tiles
 '''
 
+def initializeGame(mode):
+    # mode: 0 - fullscreen, 1 - windowed
+    # returns: screen, screenwh[w,h]
+    pygame.init()
+    if mode == 0: # TODO must implement an exit for fullscreen mode!!!
+        print "fullscreen mode selected: " + str(screen_width) + "x" + str(screen_height)
+        screen = pygame.display.set_mode((0,0),pygame.FULLSCREEN)
+        screeninfo = pygame.display.Info()
+        screenwh = [screeninfo.current_w,screeninfo.current_h]
+    else:
+        screenwh = [1000,1000]
+        screen = pygame.display.set_mode((screenwh[0],screenwh[1]))
+        print "windowed mode selected: " + str(screen_width) + "x" + str(screen_height)
+    pygame.display.set_caption('Grognar in Action')
+    return screen, screenwh
+
+def createRooms(number, themes):
+    # input: number - number of rooms to create
+    #        themes - array of themes to use
+    # returns: array of rooms
+    rooms_created = 0
+    rooms = [] 
+    while rooms_created < number:
+        # create new room with random xy and random theme 
+        rndxy = [random.randint(0,screen_width), random.randint(0,screen_height)]
+        new_room = Room(rndxy,random.choice(themes)) 
+
+        # get size coords
+        npos_s,npos_e = new_room.topleft,new_room.corners[2]
+
+        # check for screen edge violation
+        if (new_room.corners[2][0] >= screen_width) or (new_room.corners[2][1] >= screen_height):
+            continue
+
+        # check for first room
+        if len(rooms) == 0:
+            rooms.append(new_room)
+            continue
+
+        # check for existing room violation 
+        no_conflict = True
+        for rc in rooms:
+            # check each corner of room for conflict
+            for corner in new_room.corners:
+                if rc.contains(corner,1):
+                    print "found conflict with corner coords: " + str(corner)
+                    no_conflict = False
+
+        if no_conflict == True:
+            rooms.append(new_room)
+            rooms_created += 1
+
+    print "done creating rooms"
+    return rooms
+            
+ 
+
+
 class Level:
     ''' This class holds important level data '''
     def __init__(self):
-        #load images
-        #self.images = loadImagePaths()
         self.rooms = []
         self.hallways = []
         self.items = []
         self.mobs = []
+
 
 class Block(pygame.sprite.Sprite):
     '''This class represents the basic building blocks of the game level'''
@@ -82,12 +141,16 @@ class Room:
         self.connected = False
         self.blocks = [] # initialize empty block list
         self.wallblocks = []
-        self.topleft = topleft
         self.theme = theme
         # create randomized room
         rndx = random.randint(MIN_ROOM_SIZE,MAX_ROOM_SIZE)
         rndy = random.randint(MIN_ROOM_SIZE,MAX_ROOM_SIZE)
         self.size = [rndx,rndy]
+        self.topleft = topleft
+        topright = [self.topleft[0]+(self.size[0]*BLOCK_SIZE),self.topleft[1]]
+        bottomright = [self.topleft[0]+(self.size[0]*BLOCK_SIZE),self.topleft[1]+(self.size[1]*BLOCK_SIZE)]
+        bottomleft = [self.topleft[0],self.topleft[1]+(self.size[1]*BLOCK_SIZE)]
+        self.corners = [topleft,topright,bottomright,bottomleft]
         for x in range(0,rndx):
             for y in range(0,rndy):
                 # get random image to create new block and add to blocks
@@ -98,20 +161,15 @@ class Room:
     def addBlock(self, block):
         self.blocks.append(block)
 
-    def contains(self, xy):
+    def contains(self, xy, p):
         # returns true if xy coord is in room
-        if self.topleft[0] > xy[0]:
-            return False
-        elif xy[0] > (self.topleft[0] + (self.size[0]*BLOCK_SIZE)):
-            return False
-        elif self.topleft[1] > xy[1]:
-            return False
-        elif xy[1] > (self.topleft[1] + (self.size[1]*BLOCK_SIZE)):
-            return False
-        else:
+        # p[lus] - searches border + plus value
+        if (self.corners[0][0]-p <= xy[0] <= self.corners[1][0]+p) and (self.corners[0][1]-p <= xy[1] <= self.corners[2][1]+p):
             return True
+        else:
+            return False
 
-    def addWalls(self, level):
+    def addWalls(self):
         # all_image_paths format - 3 -> 6
         # used to create walls around rooms - assumes margins are wide enough for placement from room creation
         #startxy = [top_left - block_size for top_left,block_size in zip(self.topleft,BLOCK_SIZE)]
@@ -209,7 +267,7 @@ class Hall:
             for i in range(0,section_length):
                 # while placing hallway blocks must check for collisions
                 newxy = [currxy[0] + (direction[0]*i*BLOCK_SIZE),currxy[1] + (direction[1]*i*BLOCK_SIZE)]
-                if dest_room.contains(newxy) == True:
+                if dest_room.contains(newxy, 0) == True:
                     hallway_connected = True
                 new_hall_block = Block('hall',self.theme,newxy)
                 self.blocks.append(new_hall_block)
