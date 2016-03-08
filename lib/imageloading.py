@@ -1,6 +1,6 @@
 # contains methods and resources for image loading and storage
 
-import os 
+import os, random 
 
 '''
 LEVELS : BASE, TYPE, <THEME>, NAME 
@@ -9,12 +9,15 @@ LEVELS : BASE, TYPE, <THEME>, NAME
 # defines
 BASE = 'images/'
 EXCLUDE = 'README'
+ready = False 
 types = [] # will hold all image types (ie floor,wallup,etc) based on folders in images/
 themes = [] # store will same directory tree and then (theme, fullpath)
 actions = []
 images = []
 
-def loadImages():
+# TODO MUST IMPLEMENT THIS:
+#   pick random image if no appropriate found
+def initialize():
     print "--- loading images filepaths ---"
     # get all types
     ntypes = os.listdir(BASE) 
@@ -36,7 +39,9 @@ def loadImages():
         for th in ty[1]:
             names = os.listdir(th)
             images.append([th + '/' + name for name in names])
+
     print "complete!"
+    ready = True
 
 
 def getTypes():
@@ -73,7 +78,20 @@ def getActions(block_type, theme_type):
         return actions_returned
 
 
-
+def getRandomStartAction(block_type, block_theme):
+    # returns action randomly chosen from all actions with _ marker
+    found_valid = False 
+    temp = []
+    for blk in actions:
+        for action, paths in zip(blk[0],blk[1]):
+            if (block_type in paths) and (block_theme in paths) and ('_' in paths):
+                found_valid = True 
+                temp.append(action)
+    if found_valid == False:
+        print "ERROR: tried to get random start action -- invalid block or theme type"
+        return -1
+    else:
+        return random.choice(temp)
 
 def getActionImages(block_type, block_theme, block_action):
     # retrieves list of images associated with one action for type and theme
@@ -91,7 +109,18 @@ def getActionImages(block_type, block_theme, block_action):
     else:
         return images_returned
 
-
-
-
-
+def getRandomStartImage(block_type, block_theme, block_action):
+    # grabs random start image chosen from all images with _ leading name 
+    temp = []
+    found_valid = False 
+    for action_list in images:
+        for action in action_list:
+            # find appropriate action image list
+            if (block_type in action) and (block_theme in action) and (block_action in action) and ('_' in action):
+                found_valid = True
+                temp.append(action)
+    if found_valid == False:
+        print "ERROR: tried to get action images from type: " + str(block_type) + " theme: " + str(block_theme) + " action: " + str(block_action)
+        return -1
+    else:
+        return random.choice(temp)

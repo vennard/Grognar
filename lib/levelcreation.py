@@ -1,6 +1,6 @@
 # Contains methods and resources for level generation
 
-import pygame, random, os
+import pygame, random, os, imageloading
 
 WHITE = (255,255,255)
 LEVEL_SIZE = 1000
@@ -31,33 +31,11 @@ all_image_paths format
 7 - test tiles
 '''
 
-def loadThemeImages(path):
-    # INPUT: give path to image type folder (ie floor_tiles) containing themes 
-    # OUTPUT: returns path to random themed room containing images
-    print("testing out easier image loading for grabbing themes later on")
-    themes = [path + name + '/' for name in os.listdir(path)]
-    return random.choice(themes)
-
-
-def loadImagePaths():
-    print("attempting to load all images")
-    path0='images/'
-    path_array = ['floor_tiles/','door_tiles/','item_tiles/','wall_tiles/RIGHT/','wall_tiles/LEFT/','wall_tiles/UP/','wall_tiles/DOWN/','test_tiles/']
-    iarray = [path0 + pt for pt in path_array] 
-    iarray[0] = loadThemeImages(iarray[0])
-    image_paths = []
-    for path1 in iarray:
-        image_names = os.listdir(path1)
-        image_paths.append([path0 + path1 + name for name in image_names])
-    print "done loading image paths: " + str(image_paths)
-    return image_paths
-
-    
 class Level:
     ''' This class holds important level data '''
     def __init__(self):
         #load images
-        self.images = loadImagePaths()
+        #self.images = loadImagePaths()
         self.rooms = []
         self.hallways = []
         self.items = []
@@ -65,7 +43,9 @@ class Level:
 
 class Block(pygame.sprite.Sprite):
     '''This class represents the basic building blocks of the game level'''
-    def __init__(self, image, pos):
+    # TODO implementing choosing own image - must load once in init
+    # always created with block_action = any _leading action
+    def __init__(self, block_type, block_theme, pos):
         # call parent constructor
         super(Block, self).__init__()
 
@@ -73,9 +53,21 @@ class Block(pygame.sprite.Sprite):
         self.collision_detect = False # False means walkable, True is generally a wall
         self.side = None # For wall property, contains: LEFT, RIGHT, TOP, BOT
 
-        # initialize image and position
-        temp = pygame.image.load(image).convert()
+        # load image filepaths if not done
+        if imageloading.ready == False: 
+            imageloading.initialize()
+            imageloading.ready = True
+
+        # pick initial action and randomly chosen _*.png as start image
+        self.actions = imageloading.getActions(block_type,block_theme)
+        self.action_state = imageloading.getRandomStartAction(block_type,block_theme)
+
+        # load image
+        temp_path = imageloading.getRandomStartImage(block_type,block_theme,self.action_state)
+        temp = pygame.image.load(temp_path).convert()
         self.image = pygame.transform.scale(temp,(BLOCK_SIZE,BLOCK_SIZE))
+
+        # initialize rect and position
         self.rect = self.image.get_rect()
         self.rect.topleft = pos
 
@@ -86,12 +78,12 @@ class Block(pygame.sprite.Sprite):
 class Room:
     #NOTE: class attributes applied to all instances of this class used without self.
 
-    def __init__(self, topleft, floor_images):
+    def __init__(self, topleft, theme):
         self.connected = False
         self.blocks = [] # initialize empty block list
         self.wallblocks = []
         self.topleft = topleft
-        self.floor_images = floor_images 
+        self.theme = theme
         # create randomized room
         rndx = random.randint(MIN_ROOM_SIZE,MAX_ROOM_SIZE)
         rndy = random.randint(MIN_ROOM_SIZE,MAX_ROOM_SIZE)
@@ -99,10 +91,9 @@ class Room:
         for x in range(0,rndx):
             for y in range(0,rndy):
                 # get random image to create new block and add to blocks
-                rnd_image = random.randint(0,len(floor_images)-1)
                 newx = topleft[0] + BLOCK_SIZE*x 
                 newy = topleft[1] + BLOCK_SIZE*y 
-                self.blocks.append(Block(floor_images[rnd_image],[newx,newy]))
+                self.blocks.append(Block('floor',self.theme,[newx,newy]))
 
     def addBlock(self, block):
         self.blocks.append(block)
@@ -128,28 +119,28 @@ class Room:
         startxy = [(self.topleft[0]+(self.size[0]*BLOCK_SIZE)),self.topleft[1]-BLOCK_SIZE]
         for y in range(0,self.size[1]+2): # creating right wall 
             newxy = [startxy[0], startxy[1] + (y*BLOCK_SIZE)]
-            newblock = Block(random.choice(level.images[3]),newxy)
+            newblock = Block('wall',self.theme,newxy)
             newblock.side = RIGHT
             newblock.collision_detect = True
             self.wallblocks.append(newblock)
         startxy = [self.topleft[0]-BLOCK_SIZE, self.topleft[1]-BLOCK_SIZE] 
         for y in range(0,self.size[1]+1): # creation left wall 
             newxy = [startxy[0], startxy[1] + (y*BLOCK_SIZE)]
-            newblock = Block(random.choice(level.images[4]),newxy)
+            newblock = Block('wall',self.theme,newxy)
             newblock.side = LEFT
             newblock.collision_detect = True
             self.wallblocks.append(newblock)
         startxy = [self.topleft[0]-BLOCK_SIZE, self.topleft[1]-BLOCK_SIZE] 
         for x in range(0,self.size[0]+1): # creation top wall 
             newxy = [startxy[0] + (x*BLOCK_SIZE), startxy[1]]
-            newblock = Block(random.choice(level.images[5]),newxy)
+            newblock = Block('wall',self.theme,newxy)
             newblock.side = UP 
             newblock.collision_detect = True
             self.wallblocks.append(newblock)
         startxy = [self.topleft[0]-BLOCK_SIZE, (self.topleft[1] + (self.size[1]*BLOCK_SIZE))] 
         for x in range(0,self.size[0]+2): # creation bottom wall 
             newxy = [startxy[0] + (x*BLOCK_SIZE), startxy[1]]
-            newblock = Block(random.choice(level.images[6]),newxy)
+            newblock = Block('wall',self.theme,newxy)
             newblock.side = DOWN
             newblock.collision_detect = True
             self.wallblocks.append(newblock)
@@ -161,10 +152,10 @@ class Hall:
     # TODO add walls to hallway
     # TODO cleanup overlap with rooms
     # TODO add door at any intersection point with wall
-    def __init__(self, startxy, start_direction, destxy, images, dest_room):
+    def __init__(self, startxy, start_direction, destxy, dest_room, theme):
         self.blocks = [] # initialize empty block list
         self.wallblocks = [] 
-        self.floor_images = images
+        self.theme = theme
 
         # generate hallway
         currxy = startxy # holds current xy variable as hallway moves along during creation
@@ -220,8 +211,7 @@ class Hall:
                 newxy = [currxy[0] + (direction[0]*i*BLOCK_SIZE),currxy[1] + (direction[1]*i*BLOCK_SIZE)]
                 if dest_room.contains(newxy) == True:
                     hallway_connected = True
-                rnd_hall_image = random.choice(self.floor_images)
-                new_hall_block = Block(rnd_hall_image,newxy)
+                new_hall_block = Block('hall',self.theme,newxy)
                 self.blocks.append(new_hall_block)
             currxy = newxy
             # check for more basic end condition TODO change of delta 
@@ -239,7 +229,7 @@ class Hall:
 
 
 # Loops until all rooms are connected, must be run after rooms are created
-def createHallways(images):
+def createHallways(theme):
     # main loop waiting for all hallways to be connected
     created_all_hallways = False
     hallways_made = 0
@@ -310,7 +300,7 @@ def createHallways(images):
 
         print "startxy = " + str(startxy)
         print "destxy= " + str(destxy)
-        new_hall = Hall(startxy, start_direction, destxy, images, dest_room)
+        new_hall = Hall(startxy, start_direction, destxy, dest_room, theme)
         hallways.append(new_hall)
         hallways_made = hallways_made + 1
         if hallways_made >= 7:

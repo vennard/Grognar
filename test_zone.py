@@ -17,9 +17,13 @@ if args.debug_mode == True:
 
 # test call to all aux scripts
 print("Startin TEST ZONE script -- YOU ARE IN DEBUG / TEST MODE")
-imageloading.loadImages()
+'''
+imageloading.initialize()
 print str(imageloading.getActionImages('mob','glow','initial'))
+print str(imageloading.getRandomStartAction('wall','brick'))
+print str(imageloading.getRandomStartImage('wall','test','initial'))
 exit()
+'''
 
 
 # initialize screen and background
@@ -73,7 +77,7 @@ while number_rooms < 5:
     #Create new room at random coords
     rndx = random.randint(0,levelcreation.LEVEL_SIZE)
     rndy = random.randint(0,levelcreation.LEVEL_SIZE)
-    nroom = levelcreation.Room([rndx,rndy],level0.images[0])
+    nroom = levelcreation.Room([rndx,rndy],'brick')
     npos_s = nroom.topleft
     npos_e = [npos_s[0]+(nroom.size[0]*levelcreation.BLOCK_SIZE),npos_s[1]+(nroom.size[1]*levelcreation.BLOCK_SIZE)]
     #print "adding room %d at x=%d and y=%d with xend=%d and yend=%d" % (i,rndx,rndy,npos_e[0],npos_e[1])
@@ -245,7 +249,7 @@ hallways.append(newhall)
 levelcreation.rooms = room_check
 hallways = []
 #image = ['images/floor_tiles/tile5.png']
-hallways = levelcreation.createHallways(level0.images[1])
+hallways = levelcreation.createHallways('brick')
 
 # display all rooms in room_list
 for room in levelcreation.rooms:
