@@ -10,10 +10,16 @@ screen, wh = levelcreation.initializeGame(1)
 
 level = levelcreation.Level()
 level.rooms = levelcreation.createRooms(7,'brick') # TODO fix with better number and theme array
+level.hallways = levelcreation.createHallways(level.rooms,'brick') # TODO fix with better theme
+
 
 # display all rooms in room_list
 for room in level.rooms:
     for k in room.blocks:
+        screen.blit(k.image, k.rect)
+
+for hall in level.hallways:
+    for k in hall.blocks:
         screen.blit(k.image, k.rect)
 
 # start main game loop

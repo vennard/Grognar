@@ -1,6 +1,6 @@
 # Contains methods and resources for level generation
 
-import pygame, random, os, imageloading
+import pygame, random, os, imageloading, time
 
 WHITE = (255,255,255)
 LEVEL_SIZE = 1000
@@ -16,8 +16,6 @@ LEFT = [-1,0]
 UP = [0,1]
 DOWN = [0,-1]
 
-
-rooms = [] # holds all rooms for level
 screen_width = 1000
 screen_height = 1000
 
@@ -55,6 +53,7 @@ def createRooms(number, themes):
     # returns: array of rooms
     rooms_created = 0
     rooms = [] 
+    time0 = time.time()
     while rooms_created < number:
         # create new room with random xy and random theme 
         rndxy = [random.randint(0,screen_width), random.randint(0,screen_height)]
@@ -85,7 +84,10 @@ def createRooms(number, themes):
             rooms.append(new_room)
             rooms_created += 1
 
-    print "done creating rooms"
+    for rm in rooms:
+        rm.addWalls()
+    time_elapsed = time.time() - time0
+    print "done creating rooms in " + str(time_elapsed) + " seconds"
     return rooms
             
  
@@ -111,6 +113,8 @@ class Block(pygame.sprite.Sprite):
         # default properties
         self.collision_detect = False # False means walkable, True is generally a wall
         self.side = None # For wall property, contains: LEFT, RIGHT, TOP, BOT
+        self.block_type = block_type
+        self.block_theme = block_theme
 
         # load image filepaths if not done
         if imageloading.ready == False: 
@@ -132,6 +136,7 @@ class Block(pygame.sprite.Sprite):
 
     def changeImage(self, newimage):
         self.image = pygame.image.load(newimage).convert()
+
 
 
 class Room:
@@ -170,38 +175,38 @@ class Room:
             return False
 
     def addWalls(self):
-        # all_image_paths format - 3 -> 6
         # used to create walls around rooms - assumes margins are wide enough for placement from room creation
-        #startxy = [top_left - block_size for top_left,block_size in zip(self.topleft,BLOCK_SIZE)]
-        # create walls in order right, left, top, bottom
         startxy = [(self.topleft[0]+(self.size[0]*BLOCK_SIZE)),self.topleft[1]-BLOCK_SIZE]
         for y in range(0,self.size[1]+2): # creating right wall 
             newxy = [startxy[0], startxy[1] + (y*BLOCK_SIZE)]
             newblock = Block('wall',self.theme,newxy)
             newblock.side = RIGHT
             newblock.collision_detect = True
-            self.wallblocks.append(newblock)
+            newblock.image = pygame.transform.rotate(newblock.image,90)
+            self.blocks.append(newblock)
         startxy = [self.topleft[0]-BLOCK_SIZE, self.topleft[1]-BLOCK_SIZE] 
         for y in range(0,self.size[1]+1): # creation left wall 
             newxy = [startxy[0], startxy[1] + (y*BLOCK_SIZE)]
             newblock = Block('wall',self.theme,newxy)
             newblock.side = LEFT
+            newblock.image = pygame.transform.rotate(newblock.image,270)
             newblock.collision_detect = True
-            self.wallblocks.append(newblock)
+            self.blocks.append(newblock)
         startxy = [self.topleft[0]-BLOCK_SIZE, self.topleft[1]-BLOCK_SIZE] 
         for x in range(0,self.size[0]+1): # creation top wall 
             newxy = [startxy[0] + (x*BLOCK_SIZE), startxy[1]]
             newblock = Block('wall',self.theme,newxy)
             newblock.side = UP 
             newblock.collision_detect = True
-            self.wallblocks.append(newblock)
+            self.blocks.append(newblock)
         startxy = [self.topleft[0]-BLOCK_SIZE, (self.topleft[1] + (self.size[1]*BLOCK_SIZE))] 
         for x in range(0,self.size[0]+2): # creation bottom wall 
             newxy = [startxy[0] + (x*BLOCK_SIZE), startxy[1]]
             newblock = Block('wall',self.theme,newxy)
             newblock.side = DOWN
             newblock.collision_detect = True
-            self.wallblocks.append(newblock)
+            newblock.image = pygame.transform.rotate(newblock.image,180)
+            self.blocks.append(newblock)
 
 
 
@@ -287,8 +292,9 @@ class Hall:
 
 
 # Loops until all rooms are connected, must be run after rooms are created
-def createHallways(theme):
+def createHallways(rooms,theme):
     # main loop waiting for all hallways to be connected
+    # returns array of halls
     created_all_hallways = False
     hallways_made = 0
     hallways = [] # TODO replaces above and must return along with rooms
@@ -341,20 +347,22 @@ def createHallways(theme):
         # startxy - destxy = deltaxy or exp if -13,0 we need to go +x to reach dest
 
         prev = max
-        for wallblock in start_room.wallblocks:
+        for wallblock in start_room.blocks:
             delta = [x - y for x, y in zip(wallblock.rect.topleft,destxy)]
-            val = abs(delta[0]) + abs(delta[1])
-            if val < prev:
-                prev = val
-                startxy = wallblock.rect.topleft
-                start_direction = wallblock.side
+            if wallblock.block_type == 'wall':
+                val = abs(delta[0]) + abs(delta[1])
+                if val < prev:
+                    prev = val
+                    startxy = wallblock.rect.topleft
+                    start_direction = wallblock.side
         prev = max
-        for wallblock in dest_room.wallblocks:
-            delta = [x - y for x, y in zip(wallblock.rect.topleft,startxy)]
-            val = abs(delta[0]) + abs(delta[1])
-            if val < prev:
-                prev = val
-                destxy = wallblock.rect.topleft
+        for wallblock in dest_room.blocks:
+            if wallblock.block_type == 'wall':
+                delta = [x - y for x, y in zip(wallblock.rect.topleft,startxy)]
+                val = abs(delta[0]) + abs(delta[1])
+                if val < prev:
+                    prev = val
+                    destxy = wallblock.rect.topleft
 
         print "startxy = " + str(startxy)
         print "destxy= " + str(destxy)
