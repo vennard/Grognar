@@ -76,7 +76,7 @@ def createRooms(number, themes):
         for rc in rooms:
             # check each corner of room for conflict
             for corner in new_room.corners:
-                if rc.contains(corner,1):
+                if rc.contains(corner):
                     print "found conflict with corner coords: " + str(corner)
                     no_conflict = False
 
@@ -90,8 +90,6 @@ def createRooms(number, themes):
     print "done creating rooms in " + str(time_elapsed) + " seconds"
     return rooms
             
- 
-
 
 class Level:
     ''' This class holds important level data '''
@@ -100,6 +98,22 @@ class Level:
         self.hallways = []
         self.items = []
         self.mobs = []
+
+    def anyRoomContains(self,xy,border):
+        # searches all level rooms for conflict
+        for rm in self.rooms:
+            if rm.contains(xy) == True:
+                return True
+        return False
+
+    def anyBorderContains(self,xy):
+        # searches level for xy point 
+        for rm in self.rooms:
+            if rm.wallContains(xy) == True:
+                return True
+        return False
+
+        
 
 
 class Block(pygame.sprite.Sprite):
@@ -152,10 +166,7 @@ class Room:
         rndy = random.randint(MIN_ROOM_SIZE,MAX_ROOM_SIZE)
         self.size = [rndx,rndy]
         self.topleft = topleft
-        topright = [self.topleft[0]+(self.size[0]*BLOCK_SIZE),self.topleft[1]]
-        bottomright = [self.topleft[0]+(self.size[0]*BLOCK_SIZE),self.topleft[1]+(self.size[1]*BLOCK_SIZE)]
-        bottomleft = [self.topleft[0],self.topleft[1]+(self.size[1]*BLOCK_SIZE)]
-        self.corners = [topleft,topright,bottomright,bottomleft]
+        self.botright = [topleft[0]+(self.size[0]*BLOCK_SIZE),topleft[1]+(self.size[1]*BLOCK_SIZE)]
         for x in range(0,rndx):
             for y in range(0,rndy):
                 # get random image to create new block and add to blocks
@@ -166,13 +177,27 @@ class Room:
     def addBlock(self, block):
         self.blocks.append(block)
 
-    def contains(self, xy, p):
+    def contains(self, xy):
         # returns true if xy coord is in room
         # p[lus] - searches border + plus value
-        if (self.corners[0][0]-p <= xy[0] <= self.corners[1][0]+p) and (self.corners[0][1]-p <= xy[1] <= self.corners[2][1]+p):
+        if (self.topleft[0] <= xy[0] <= self.topleft[0] + (self.size[0]*BLOCK_SIZE)) and (self.topleft[1] <= xy[1] <= self.topleft[1] + (self.size[1]*BLOCK_SIZE)):
             return True
         else:
             return False
+
+    def floorContains(self, xy):
+        for blk in self.blocks:
+            if blk.block_type == 'floor' and blk.rect.topleft == xy:
+                return True
+        return False
+
+    
+    def wallContains(self, xy):
+        for blk in self.blocks:
+            if blk.block_type == 'wall' and blk.rect.topleft == xy:
+                return True
+        return False
+
 
     def addWalls(self):
         # used to create walls around rooms - assumes margins are wide enough for placement from room creation
@@ -272,7 +297,7 @@ class Hall:
             for i in range(0,section_length):
                 # while placing hallway blocks must check for collisions
                 newxy = [currxy[0] + (direction[0]*i*BLOCK_SIZE),currxy[1] + (direction[1]*i*BLOCK_SIZE)]
-                if dest_room.contains(newxy, 0) == True:
+                if dest_room.contains(newxy) == True:
                     hallway_connected = True
                 new_hall_block = Block('hall',self.theme,newxy)
                 self.blocks.append(new_hall_block)
@@ -292,9 +317,10 @@ class Hall:
 
 
 # Loops until all rooms are connected, must be run after rooms are created
-def createHallways(rooms,theme):
+def createHallways(level,theme):
     # main loop waiting for all hallways to be connected
     # returns array of halls
+    rooms = level.rooms
     created_all_hallways = False
     hallways_made = 0
     hallways = [] # TODO replaces above and must return along with rooms
@@ -371,6 +397,18 @@ def createHallways(rooms,theme):
         hallways_made = hallways_made + 1
         if hallways_made >= 7:
             created_all_hallways = True
+    #TODO before returning cleanup overlap and add doorway
+    for hallcheck in hallways:
+        # check through blocks in hallway
+        for blk in hallcheck.blocks:
+            # remove block from hallway if inside room
+            if level.anyRoomContains(blk.rect.topleft,0) == True:
+                blk.changeImage('images/test/type0/_initial/5.png')
+             
+            # replace block with door if border of room
+            if level.anyBorderContains(blk.rect.topleft) == True:
+                blk.changeImage('images/test/type0/_initial/2.png')
+
     return hallways
         
 
