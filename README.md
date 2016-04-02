@@ -25,6 +25,7 @@ git push
 Basic Development Plan:
 1. Level Creation
 2. Movement / Collision Detection
+    a. char can only move based on valid square to move to (aka hall edges automatically off limits)
 3. Goal / Level Save / Item Mechanics
 
 Level Generation Structure (Rough Outline):
@@ -39,4 +40,17 @@ Level Generation Structure (Rough Outline):
     b. Utilize random (intelligent) placement of rooms (with random sizes)
     c. utilize semi-random floor graphics choices
     d. add walls and doorways after all rooms are placed (controlled-random)
+
+3. Generate Halls
+
+4. Cleanup overlapping halls
+    a. place hall tile only is space != occupied by room / wall tile
+    b. hall tile + wall tile = door tile
+    
+5. Add random start locations
+    a. random character start
+    b. random item locations
+    c. random end condition location
+
+
 
