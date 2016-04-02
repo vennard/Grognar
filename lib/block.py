@@ -7,6 +7,9 @@ class Block(pygame.sprite.Sprite):
         super(Block,self).__init__()
         # set defaults
         self.visible = True
+        self.solid = False # collision detection variable
+        self.side = None # for wall type: RIGHT, LEFT, UP, DOWN
+        self.block_type = None # see imageloading for details
         self.images = [] # holds images for animation
         self.rate = 10 # division factor for animation speed from 60fps total game speed
         self.rate_count = 0
@@ -22,15 +25,21 @@ class Block(pygame.sprite.Sprite):
 
     def setBlack(self):
         self.image = self.black
+        self.block_type = None
+
+    def setRed(self):
+        self.image = pygame.transform.scale(pygame.image.load('images/test/type0/_initial/1.png').convert(),(10,10))
 
     def setImage(self, block_type, block_theme):
         # set static image using type and theme
+        self.block_type = block_type
         path = imageloading.getRandomStartImage(block_type, block_theme, 'initial')
         temp = pygame.image.load(path).convert()
         self.image = pygame.transform.scale(temp,(10,10))
 
     def setActionImages(self, block_type, block_theme, block_action):
         # set images using type, theme, and action
+        self.block_type = block_type
         start_action = imageloading.getRandomStartAction(block_type, block_theme)
         start_path, paths = imageloading.getActionImages(block_type, block_theme, start_action)
         self.image = pygame.transform.scale(pygame.image.load(start_path).convert(),(10,10))

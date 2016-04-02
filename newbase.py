@@ -7,11 +7,13 @@ from lib import levelgenerator, imageloading
 pygame.init()
 imageloading.initialize()
 screen = pygame.display.set_mode((1000,1000))
-level = levelgen.Level([100,100])
+level = levelgenerator.Level([100,100])
 
 # Create rooms
 level.generateRooms(4)
-level.writeToGrid()
+level.writeToGrid(level.rooms)
+level.generateHalls()
+level.writeToGrid(level.hallways)
 
 # End 
 #test_images = ['images/test/type0/_initial/0.png','images/test/type0/_initial/1.png','images/test/type0/_initial/2.png','images/test/type0/_initial/3.png']
