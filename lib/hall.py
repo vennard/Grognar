@@ -153,7 +153,7 @@ class Hall:
             if grid_block.block_type != None:
                 # place door TODO consider limiting placements
                 if grid_block.block_type == 'wall':
-                    hallblk.setRed()
+                    hallblk.setImage('door',random.choice(imageloading.getThemes('door')))
                     blocks_new.append(hallblk)
             else:
                 blocks_new.append(hallblk)
