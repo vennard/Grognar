@@ -3,7 +3,12 @@
 import os, random 
 
 '''
-LEVELS : BASE, TYPE, <THEME>, NAME 
+file structure: BASE, TYPE, <THEME>, NAME 
+
+usage:
+    provide random image selection using block type, theme, and action selectors
+    _name means static image, otherwise assumed to be animated
+    multiple static images result in random selection 
 '''
 
 # defines
@@ -15,8 +20,7 @@ themes = [] # store will same directory tree and then (theme, fullpath)
 actions = []
 images = []
 
-# TODO MUST IMPLEMENT THIS:
-#   pick random image if no appropriate found
+# must be run before images can be used
 def initialize():
     print "--- loading images filepaths ---"
     # get all types
@@ -41,6 +45,11 @@ def initialize():
             images.append([th + '/' + name for name in names])
 
     print "complete!"
+    print "Usage Info:"
+    index = 0
+    for tmp in types:
+        print "Index " + str(index) + " for " + str(tmp)
+        index +=1
     ready = True
 
 
@@ -95,8 +104,9 @@ def getRandomStartAction(block_type, block_theme):
 
 def getActionImages(block_type, block_theme, block_action):
     # retrieves list of images associated with one action for type and theme
-    # RETURNS: array with following structure [image_list[], index_of_static[]] TODO implement simple first 
+    # returns: image, image_list
     images_returned = []
+    start_image = None
     found_valid = False
     for action_list in images:
         for action in action_list:
@@ -104,10 +114,12 @@ def getActionImages(block_type, block_theme, block_action):
             if (block_type in action) and (block_theme in action) and (block_action in action):
                 found_valid = True
                 images_returned.append(action)
+            if (block_type in action) and (block_theme in action) and (block_action in action) and ('_' in action):
+                start_image = action
     if found_valid == False:
         print "ERROR: tried to get action images from type: " + str(block_type) + " theme: " + str(block_theme) + " action: " + str(block_action)
     else:
-        return images_returned
+        return start_image, images_returned
 
 def getRandomStartImage(block_type, block_theme, block_action):
     # grabs random start image chosen from all images with _ leading name 
@@ -125,3 +137,7 @@ def getRandomStartImage(block_type, block_theme, block_action):
         return -1
     else:
         return random.choice(temp)
+
+
+
+
