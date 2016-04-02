@@ -1,6 +1,6 @@
 # new level generation code (updated from levelcreation.py)
 import pygame, random 
-import roomgen, levelblock
+import room, block 
 
 class Level:
     def __init__(self, size):
@@ -14,7 +14,7 @@ class Level:
         for row in range(size[0]):
             self.grid.append([])
             for col in range(size[1]):
-                self.grid[row].append(levelblock.Block((row,col)))
+                self.grid[row].append(block.Block((row,col)))
 
     def updateLevel(self, screen):
         # update and display each block in level
@@ -27,7 +27,7 @@ class Level:
                     pass
 
     def generateRooms(self, num):
-        self.rooms = roomgen.createRooms(num, self.size)
+        self.rooms = room.createRooms(num, self.size)
 
     def writeToGrid(self):
         # write rooms, hallways, etc to grid for display

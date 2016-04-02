@@ -1,7 +1,7 @@
 #!/usr/bin/python2
 
 import pygame
-from lib import levelgen, imageloading 
+from lib import levelgenerator, imageloading 
 
 # Test Zone
 pygame.init()
