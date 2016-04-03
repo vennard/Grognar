@@ -2,6 +2,7 @@
 
 import pygame
 from lib import levelgenerator, imageloading 
+from lib import block
 
 # Test Zone
 pygame.init()
@@ -14,6 +15,12 @@ level.generateRooms(4)
 level.writeToGrid(level.rooms)
 level.generateHalls()
 level.writeToGrid(level.hallways)
+
+start = level.rooms[0].topleft
+char = block.Block(start)
+image, array_images = imageloading.getActionImages('mob','glow','initia')
+char.loadImages(array_images)
+level.grid[char.pos[0]][char.pos[1]] = char
 
 # End 
 #test_images = ['images/test/type0/_initial/0.png','images/test/type0/_initial/1.png','images/test/type0/_initial/2.png','images/test/type0/_initial/3.png']
