@@ -18,7 +18,7 @@ level.writeToGrid(level.hallways)
 
 start = level.rooms[0].topleft
 char = block.Block(start)
-image, array_images = imageloading.getActionImages('mob','glow','initia')
+image, array_images = imageloading.getActionImages('mob','blob','initia')
 char.loadImages(array_images)
 level.grid[char.pos[0]][char.pos[1]] = char
 
@@ -35,12 +35,28 @@ while 1:
             print("Exited through canceling screen")
             exit()
         elif event.type == pygame.KEYDOWN:
-            print("Pressed KEYDOWN")
+            # capture keypress
+            if event.key == pygame.K_UP:
+                char.pos[1] -= 1
+                print("UP")
+            elif event.key == pygame.K_DOWN:
+                char.pos[1] += 1
+                print("DOWN")
+            elif event.key == pygame.K_RIGHT:
+                char.pos[0] += 1
+                print("RIGHT")
+            elif event.key == pygame.K_LEFT:
+                char.pos[0] -= 1
+                print("LEFT")
+            else:
+                print("not mapped keypress")
             pass
         else:
             pass
         clk.tick(60) # update x times per second
         # update and display game world
+        char.moveBlock(char.pos)
+        level.grid[char.pos[0]][char.pos[1]] = char
         level.updateLevel(screen)
         pygame.display.flip()
 

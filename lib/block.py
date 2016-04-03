@@ -23,6 +23,10 @@ class Block(pygame.sprite.Sprite):
         self.rect.topleft = [pos[0]*10,pos[1]*10] # actual position
         self.pos = pos # grid position
 
+    def moveBlock(self, pos):
+        self.rect.topleft = [pos[0]*10,pos[1]*10] # set actual position
+        self.pos = pos
+
     def setBlack(self):
         self.image = self.black
         self.block_type = None

@@ -77,10 +77,12 @@ class Room:
     def addWalls(self):
         # used to create walls around rooms - assumes margins are wide enough for placement from room creation
         startxy = [(self.topleft[0]+self.size[0]),self.topleft[1]-1]
+        # get new theme
+        wall_theme = random.choice(imageloading.getThemes('wall'))
         for y in range(0,self.size[1]+2): # creating right wall 
             newxy = [startxy[0], startxy[1] + y]
             newblock = block.Block(newxy)
-            newblock.setImage('wall',self.theme)
+            newblock.setImage('wall',wall_theme)
             newblock.side = RIGHT
             newblock.solid = True
             newblock.image = pygame.transform.rotate(newblock.image,90)
@@ -89,7 +91,7 @@ class Room:
         for y in range(0,self.size[1]+1): # creation left wall 
             newxy = [startxy[0], startxy[1] + y]
             newblock = block.Block(newxy)
-            newblock.setImage('wall',self.theme)
+            newblock.setImage('wall',wall_theme)
             newblock.side = LEFT
             newblock.image = pygame.transform.rotate(newblock.image,270)
             newblock.solid = True
@@ -98,7 +100,7 @@ class Room:
         for x in range(0,self.size[0]+1): # creation top wall 
             newxy = [startxy[0] + x, startxy[1]]
             newblock = block.Block(newxy)
-            newblock.setImage('wall',self.theme)
+            newblock.setImage('wall',wall_theme)
             newblock.side = UP 
             newblock.solid = True
             self.blocks.append(newblock)
@@ -106,7 +108,7 @@ class Room:
         for x in range(0,self.size[0]+2): # creation bottom wall 
             newxy = [startxy[0] + x, startxy[1]]
             newblock = block.Block(newxy)
-            newblock.setImage('wall',self.theme)
+            newblock.setImage('wall',wall_theme)
             newblock.side = DOWN
             newblock.solid = True
             newblock.image = pygame.transform.rotate(newblock.image,180)
