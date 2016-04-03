@@ -8,9 +8,10 @@ UP = [0,1]
 DOWN = [0,-1]
 THRESHOLD = 7
 
-def createHalls(levelsize, rooms, grid):
+def createHalls(levelsize, rooms, grid, hallnum):
     # creates all hallways for level, must not end until all rooms are connected
     hallways = []
+    retval = True
     hall_count = 0
     created_hallways = False
     for r in rooms:
@@ -52,9 +53,10 @@ def createHalls(levelsize, rooms, grid):
                     dest_room = rnd_room
                     room.connected = True
                     dest_room_chosen = True
-        hallways.append(Hall(start_room,dest_room,grid,rooms))
+        hall = Hall(start_room, dest_room,grid,rooms)
+        hallways.append(hall)
         hall_count += 1
-        if hall_count >= 7:
+        if hall_count >= hallnum:
             created_hallways = True
 
         # final check
@@ -137,6 +139,10 @@ class Hall:
             # create hallway section and update variables
             for i in range(section_length):
                 newxy = [currxy[0] + (direction[0]*i),currxy[1] + (direction[1]*i)]
+                # check for edge collision
+                if newxy[0] >= len(grid) or newxy[1] >= len(grid[0]):
+                    newxy = currxy
+                    break
                 # check for collision with destination
                 if dest_room.contains(newxy) == True:
                     rooms_connected = True

@@ -11,9 +11,9 @@ screen = pygame.display.set_mode((1000,1000))
 level = levelgenerator.Level([100,100])
 
 # Create rooms
-level.generateRooms(4)
+level.generateRooms(5)
 level.writeToGrid(level.rooms)
-level.generateHalls()
+level.generateHalls(4)
 level.writeToGrid(level.hallways)
 
 start = level.rooms[0].topleft

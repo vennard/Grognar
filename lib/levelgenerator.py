@@ -4,7 +4,9 @@ import room, block, hall
 
 class Level:
     '''
-    Grid layout: [x][y][Active layer: Background layer]
+    Grid layout: [x][y]
+        visible = active_layer
+        hidden = background layer
     '''
     def __init__(self, size):
         # level info
@@ -37,6 +39,9 @@ class Level:
     def moveActive(self, block, newpos):
         # moves active block to newpos and restores old pos
         #   returns block with updated pos, returns block without updated pos on fail
+        # check for conflict with edge of map
+        if newpos[0] > self.size[0] or newpos[1] > self.size[1]:
+            return block
         # check for conflict with .solid property
         if self.grid_active[newpos[0]][newpos[1]].solid == True:
             return block
@@ -49,8 +54,8 @@ class Level:
     def generateRooms(self, num):
         self.rooms = room.createRooms(num, self.size)
 
-    def generateHalls(self):
-        self.hallways = hall.createHalls(self.size, self.rooms, self.grid)
+    def generateHalls(self, num):
+        self.hallways = hall.createHalls(self.size, self.rooms, self.grid, num)
 
     def writeToGrid(self, block_list):
         # write rooms, hallways, etc to grid for display
