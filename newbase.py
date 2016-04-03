@@ -37,19 +37,35 @@ while 1:
             print("Exited through canceling screen")
             exit()
         elif event.type == pygame.KEYDOWN:
-            # capture keypress
-            if event.key == pygame.K_UP:
+            # capture keypress - check for diagonal (two keys pressed at same time) first
+            if event.key == pygame.K_UP or event.key == pygame.K_KP8:
                 yadd = -1
                 print("UP")
-            elif event.key == pygame.K_DOWN:
+            elif event.key == pygame.K_DOWN or event.key == pygame.K_KP2:
                 yadd = 1
                 print("DOWN")
-            elif event.key == pygame.K_RIGHT:
+            elif event.key == pygame.K_RIGHT or event.key == pygame.K_KP6:
                 xadd = 1
                 print("RIGHT")
-            elif event.key == pygame.K_LEFT:
+            elif event.key == pygame.K_LEFT or event.key == pygame.K_KP4:
                 xadd = -1
                 print("LEFT")
+            elif event.key == pygame.K_KP7:
+                xadd = -1
+                yadd = -1
+                print("UP LEFT")
+            elif event.key == pygame.K_KP9:
+                xadd = 1
+                yadd = -1
+                print("UP RIGHT")
+            elif event.key == pygame.K_KP3:
+                xadd = 1
+                yadd = 1
+                print("DOWN RIGHT")
+            elif event.key == pygame.K_KP1:
+                xadd = -1
+                yadd = 1
+                print("DOWN LEFT")
             else:
                 print("not mapped keypress")
             pass
