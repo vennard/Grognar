@@ -57,6 +57,7 @@ class Room:
                 # get random image to create new block and add to blocks
                 pos = [topleft[0] + x, topleft[1] + y]
                 new_block = block.Block(pos)
+                new_block.solid = False
                 new_block.setImage('floor',self.theme)
                 self.blocks.append(new_block)
                 

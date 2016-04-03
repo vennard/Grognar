@@ -36,7 +36,10 @@ class Level:
 
     def moveActive(self, block, newpos):
         # moves active block to newpos and restores old pos
-        #   returns block with updated pos
+        #   returns block with updated pos, returns block without updated pos on fail
+        # check for conflict with .solid property
+        if self.grid_active[newpos[0]][newpos[1]].solid == True:
+            return block
         oldpos = block.pos
         self.grid_active[oldpos[0]][oldpos[1]] = self.grid[oldpos[0]][oldpos[1]]
         block.moveBlock(newpos)

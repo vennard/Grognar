@@ -142,6 +142,7 @@ class Hall:
                     rooms_connected = True
 
                 newblock = block.Block(newxy)
+                newblock.solid = False
                 newblock.setImage('hall',self.theme)
                 self.blocks.append(newblock)
             currxy = newxy

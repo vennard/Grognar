@@ -7,7 +7,7 @@ class Block(pygame.sprite.Sprite):
         super(Block,self).__init__()
         # set defaults
         self.visible = True
-        self.solid = False # collision detection variable
+        self.solid = True # collision detection variable
         self.side = None # for wall type: RIGHT, LEFT, UP, DOWN
         self.block_type = None # see imageloading for details
         self.images = [] # holds images for animation
