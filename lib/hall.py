@@ -8,14 +8,30 @@ UP = [0,1]
 DOWN = [0,-1]
 THRESHOLD = 7
 
+def allRoomsHere(rooms, id_list):
+    # returns true is id_list contains all rooms
+    print "CHECK: ",
+    print "does id list: " + str(id_list) + " contain all rooms?",
+    found = True
+    for rm in rooms:
+        id_check = rm.idnum
+        found_this = False
+        for ids in id_list:
+            if id_check == ids:
+                found_this = True
+        if found_this == False:
+            found = False
+    print str(found)
+    return found
+
+
+
 def createHalls(levelsize, rooms, grid, hallnum):
+    print "--------- creating hallways ---------"
     # creates all hallways for level, must not end until all rooms are connected
     hallways = []
-    retval = True
     hall_count = 0
     created_hallways = False
-    for r in rooms:
-        r.connected = False
     while created_hallways == False:
         # choose rooms
         if len(rooms) < 3:
@@ -23,47 +39,81 @@ def createHalls(levelsize, rooms, grid, hallnum):
             exit()
 
         # choose start room
-        start_room_chosen = False
+        connected_rooms = True
         for room in rooms:
             if room.connected == False:
-                # found unconnected room aka the best option
+                connected_rooms = False
+                saved_id = room.idnum
                 start_room = room
-                #room.connected = True
-                start_room_chosen = True
                 break
-        if start_room_chosen == False:
+        if connected_rooms == False:
+            print "rooms left unconnected! - would choose: " + str(saved_id)
+        else:
+            print "no rooms left unconnected"
+            start_room = random.choice(rooms)
 
-            rnd_room = random.choice(rooms)
+        dest_room = start_room
+        min_val = len(rooms)
+        for room in rooms:
+            if len(room.connectedTo) < min_val and room is not start_room:
+                min_val = len(room.connectedTo)
+                dest_room = room
 
-        # choose destination room
-        dest_room_chosen = False
-        while dest_room_chosen == False:
-            for room in rooms:
-                if room.connected != False:
-                    continue
-                else:
-                    dest_room = room
-                    dest_room_chosen = True
-                    room.connected = True
-            if dest_room_chosen == False:
-                rnd_room = random.choice(rooms)
-                if rnd_room is start_room:
-                    continue
-                else:
-                    dest_room = rnd_room
-                    room.connected = True
-                    dest_room_chosen = True
         hall = Hall(start_room, dest_room,grid,rooms)
+        start_room.connected = True
+        dest_room.connected = True
+
+        print ""
+        print "HALL" + str(hall_count) + ": connecting room " + str(start_room.idnum),
+        print "[" + str(start_room.connectedTo) + "] to room " + str(dest_room.idnum),
+        print "[" + str(dest_room.connectedTo) + "] "
+        for ids in dest_room.connectedTo:
+            already_contains = False
+            for startid in start_room.connectedTo:
+                if startid == ids:
+                    already_contains = True
+            if already_contains == False:
+                start_room.connectedTo.append(ids)
+        for ids in start_room.connectedTo:
+            already_contains = False
+            for startid in dest_room.connectedTo:
+                if startid == ids:
+                    already_contains = True
+            if already_contains == False:
+                dest_room.connectedTo.append(ids)
         hallways.append(hall)
         hall_count += 1
-        if hall_count >= hallnum:
+        print "start room list: [" + str(start_room.connectedTo) + "]"
+        print "dest room list: [" + str(dest_room.connectedTo) + "]"
+        print "------------------------------"
+        print ""
+
+        # end only when hallway count is met AND all rooms are connected
+        all_connected = True
+
+        print "checking all rooms:"
+        for check in rooms:
+            check_id = check.idnum
+            print "ROOM" + str(check_id) + ": ", 
+            print " (connected? ",
+            if check.connected == True:
+                print "YES) ",
+            else:
+                print "NO) ",
+            check_list = check.connectedTo
+            result = allRoomsHere(rooms, check_list)
+            if result == False:
+                all_connected = False
+        if all_connected == False:
+            print "room connection test - FAILED"
+        else:
+            print "room connection test - PASSED"
+        print "------------------------------"
+
+        if hall_count >= hallnum and all_connected == True:
             created_hallways = True
-
-        # final check
-        for rm in rooms:
-            if rm.connected == False: 
-                print "this room is unconnected: " + str(rm)
-
+    
+    print "done! Created " + str(hall_count) + " hallways!"
     return hallways
 
 class Hall:

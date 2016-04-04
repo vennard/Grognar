@@ -27,6 +27,7 @@ def createRooms(num, levelsize):
 
         # check for first room
         if len(rooms) == 0:
+            new.setId(rooms_created)
             new.addWalls()
             rooms.append(new)
             rooms_created += 1
@@ -38,14 +39,20 @@ def createRooms(num, levelsize):
             if rc.containsRoom(new) == True:
                 no_conflict = False
         if no_conflict == True:
+            new.setId(rooms_created)
             new.addWalls()
+            print "adding new room with ID: " + str(new.idnum)
             rooms.append(new)
             rooms_created += 1
+            # TODO URGENT!!!!! - when adding walls, check for overlap with another rooms walls
+            # if True then combined the two rooms!!!!
     return rooms
 
 class Room:
     def __init__(self, topleft):
-        self.connected = False
+        self.idnum = 0
+        self.connected = False # says whether or not its been connected to any other room
+        self.connectedTo = [] # array of ID's that this room is connected to
         self.theme = random.choice(imageloading.getThemes('floor')) 
         self.blocks = [] # initialize empty block list
         # create randomized room
@@ -61,6 +68,9 @@ class Room:
                 new_block.setImage('floor',self.theme)
                 self.blocks.append(new_block)
                 
+    def setId(self,idnum):
+        self.idnum = idnum
+        self.connectedTo.append(idnum)
 
     def containsRoom(self, room):
         # returns true if self.room overlaps with room
