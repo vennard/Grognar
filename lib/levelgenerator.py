@@ -31,8 +31,13 @@ class Level:
             for y in range(self.size[1]):
                 if self.grid_active[x][y].visible == True:
                     # only update and display visible, active layer grid locations 
-                    self.grid_active[x][y].update() 
-                    screen.blit(self.grid_active[x][y].image,self.grid_active[x][y].rect)
+                    if self.grid_active[x][y].active == True:
+                        # if active display background and then active layer block
+                        self.grid_active[x][y].update() 
+                        screen.blit(self.grid[x][y].image,self.grid[x][y].rect)
+                        screen.blit(self.grid_active[x][y].image,self.grid_active[x][y].rect)
+                    else:
+                        screen.blit(self.grid_active[x][y].image,self.grid_active[x][y].rect)
                 else:
                     pass
 

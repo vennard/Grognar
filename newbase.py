@@ -7,8 +7,12 @@ from lib import block
 # Test Zone
 pygame.init()
 imageloading.initialize()
-screen = pygame.display.set_mode((1000,1000))
-level = levelgenerator.Level([100,100])
+SIZE = 1300
+level_size = SIZE / block.SCALE
+print "level size is " + str(level_size)
+
+screen = pygame.display.set_mode((SIZE,SIZE))
+level = levelgenerator.Level([level_size,level_size])
 
 # Create rooms
 level.generateRooms(4)
@@ -18,6 +22,7 @@ level.writeToGrid(level.hallways)
 
 start = level.rooms[0].topleft
 char = block.Block(start)
+char.active = True
 image, array_images = imageloading.getActionImages('mob','blob','initia')
 char.loadImages(array_images)
 level.grid_active[char.pos[0]][char.pos[1]] = char

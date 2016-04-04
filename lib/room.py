@@ -24,6 +24,8 @@ def createRooms(num, levelsize):
         # check for screen edge violation
         if (new.botright[0] >= levelsize[0]) or (new.botright[1] >= levelsize[1]):
             continue
+        if (new.topleft[0] <= 0) or (new.topleft[1] <= 0):
+            continue
 
         # check for first room
         if len(rooms) == 0:
@@ -44,8 +46,6 @@ def createRooms(num, levelsize):
             print "adding new room with ID: " + str(new.idnum)
             rooms.append(new)
             rooms_created += 1
-            # TODO URGENT!!!!! - when adding walls, check for overlap with another rooms walls
-            # if True then combined the two rooms!!!!
     return rooms
 
 class Room:
@@ -74,7 +74,8 @@ class Room:
 
     def containsRoom(self, room):
         # returns true if self.room overlaps with room
-        if ((self.topleft[0] <= room.topleft[0] <= self.botright[0]) or (self.topleft[0] <= room.botright[0] <= self.botright[0])) and ((self.topleft[1] <= room.topleft[1] <= self.botright[1]) or (self.topleft[1] <= room.botright[1] <= self.botright[1])):
+        # allows for border of 1
+        if ((self.topleft[0]-1 <= room.topleft[0] <= self.botright[0]+1) or (self.topleft[0]-1 <= room.botright[0] <= self.botright[0]+1)) and ((self.topleft[1]-1 <= room.topleft[1] <= self.botright[1]+1) or (self.topleft[1]-1 <= room.botright[1] <= self.botright[1]+1)):
             return True
         return False
 

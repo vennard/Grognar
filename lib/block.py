@@ -1,6 +1,8 @@
 import pygame 
 import imageloading
 
+SCALE = 20
+
 class Block(pygame.sprite.Sprite):
     '''base building block'''
     def __init__(self, pos):
@@ -8,6 +10,7 @@ class Block(pygame.sprite.Sprite):
         # set defaults
         self.visible = True
         self.solid = True # collision detection variable
+        self.active = False # tells animation whether or not to display background first
         self.side = None # for wall type: RIGHT, LEFT, UP, DOWN
         self.block_type = None # see imageloading for details
         self.images = [] # holds images for animation
@@ -17,14 +20,14 @@ class Block(pygame.sprite.Sprite):
         
         # initialize blank (black) square image
         temp = pygame.image.load('images/test/type0/_initial/6.png').convert() # black square
-        self.black = pygame.transform.scale(temp,(10,10))
+        self.black = pygame.transform.scale(temp,(SCALE,SCALE))
         self.image = self.black
         self.rect = self.image.get_rect()
-        self.rect.topleft = [pos[0]*10,pos[1]*10] # actual position
+        self.rect.topleft = [pos[0]*SCALE,pos[1]*SCALE] # actual position
         self.pos = pos # grid position
 
     def moveBlock(self, pos):
-        self.rect.topleft = [pos[0]*10,pos[1]*10] # set actual position
+        self.rect.topleft = [pos[0]*SCALE,pos[1]*SCALE] # set actual position
         self.pos = pos
 
     def setBlack(self):
@@ -32,33 +35,33 @@ class Block(pygame.sprite.Sprite):
         self.block_type = None
 
     def setRed(self):
-        self.image = pygame.transform.scale(pygame.image.load('images/test/type0/_initial/1.png').convert(),(10,10))
+        self.image = pygame.transform.scale(pygame.image.load('images/test/type0/_initial/1.png').convert(),(SCALE,SCALE))
 
     def setImage(self, block_type, block_theme):
         # set static image using type and theme
         self.block_type = block_type
         path = imageloading.getRandomStartImage(block_type, block_theme, 'initial')
         temp = pygame.image.load(path).convert()
-        self.image = pygame.transform.scale(temp,(10,10))
+        self.image = pygame.transform.scale(temp,(SCALE,SCALE))
 
     def setActionImages(self, block_type, block_theme, block_action):
         # set images using type, theme, and action
         self.block_type = block_type
         start_action = imageloading.getRandomStartAction(block_type, block_theme)
         start_path, paths = imageloading.getActionImages(block_type, block_theme, start_action)
-        self.image = pygame.transform.scale(pygame.image.load(start_path).convert(),(10,10))
+        self.image = pygame.transform.scale(pygame.image.load(start_path).convert(),(SCALE,SCALE))
         for path in paths:
             temp = pygame.image.load(path).convert()
-            self.images.append(pygame.transform.scale(temp,(10,10)))
+            self.images.append(pygame.transform.scale(temp,(SCALE,SCALE)))
 
     def changeImage(self, new_image):
         temp = pygame.image.load(new_image).convert()
-        self.image = pygame.transform.scale(temp,(10,10))
+        self.image = pygame.transform.scale(temp,(SCALE,SCALE))
 
     def loadImages(self, load_images):
         for image in load_images:
-            temp = pygame.image.load(image).convert()
-            self.images.append(pygame.transform.scale(temp,(10,10)))
+            temp = pygame.image.load(image).convert().convert_alpha()
+            self.images.append(pygame.transform.scale(temp,(SCALE,SCALE)))
 
     def update(self):
         # update animation image
