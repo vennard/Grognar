@@ -2,6 +2,8 @@
 import pygame, random 
 import room, block, hall
 
+SHADOW_ON = True
+
 class Level:
     '''
     Grid layout: [x][y]
@@ -15,15 +17,21 @@ class Level:
 
         # Generate grid related data
         self.grid = []
+        self.grid_shadow = [] # holds transparent black grid to sit above all other layers
         self.grid_active = []
         self.size = size
         # generate blank grid
         for row in range(size[0]):
             self.grid.append([])
             self.grid_active.append([])
+            self.grid_shadow.append([])
             for col in range(size[1]):
                 self.grid[row].append(block.Block((row,col)))
                 self.grid_active[row].append(block.Block((row,col)))
+                surf = pygame.Surface((block.SCALE,block.SCALE))
+                surf.set_alpha(255) # set default to full black
+                surf.fill((0,0,0)) # TODO set to black
+                self.grid_shadow[row].append(surf)
 
     def updateLevel(self, screen):
         # update and display each block in level
@@ -38,6 +46,9 @@ class Level:
                         screen.blit(self.grid_active[x][y].image,self.grid_active[x][y].rect)
                     else:
                         screen.blit(self.grid_active[x][y].image,self.grid_active[x][y].rect)
+                    # display shadow last
+                    if SHADOW_ON == True:
+                        screen.blit(self.grid_shadow[x][y],[x*block.SCALE,y*block.SCALE])
                 else:
                     pass
 
@@ -55,6 +66,42 @@ class Level:
         block.moveBlock(newpos)
         self.grid_active[block.pos[0]][block.pos[1]] = block
         return block
+
+    def processShadows(self, pos, light_level):
+        # alter grid_shadows given the characters position and light level
+        # default 3
+        ''' C - character, X - light
+        .3210123
+        3...X...
+        2..XXX..
+        1.XXXXX.
+        0XXXCXXX
+        1.XXXXX.
+        2..XXX..
+        3...X...
+
+        '''
+        # clears discovered areas as you move
+        for x in range(self.size[0]):
+            for y in range(self.size[1]):
+                self.grid_shadow[x][y].set_alpha(255)
+        for x in range(-light_level,light_level+1):
+            for y in range(-light_level,light_level+1):
+                total = 4 - (abs(x) + abs(y))
+                light_scale = 4 - (abs(x) + abs(y))
+                scale = 220 - (light_scale*120)
+                if scale < 0:
+                    scale = 0
+                elif scale > 255:
+                    scale = 255
+                if total >= 0:
+                    self.grid_shadow[pos[0]+x][pos[1]+y].set_alpha(scale)
+                    #self.grid_shadow[pos[0]+x][pos[1]+y].set_alpha(0)
+                else:
+                    self.grid_shadow[pos[0]+x][pos[1]+y].set_alpha(255)
+
+
+
 
     def generateRooms(self, num):
         self.rooms = room.createRooms(num, self.size)

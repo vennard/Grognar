@@ -87,6 +87,7 @@ while 1:
         clk.tick(60) # update x times per second
         # update and display game world
         level.moveActive(char, [char.pos[0]+xadd,char.pos[1]+yadd])
+        level.processShadows(char.pos,3)
         level.updateLevel(screen)
         screen.blit(s,(600,600))
         pygame.display.flip()
