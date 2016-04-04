@@ -2,7 +2,7 @@
 
 import pygame
 from lib import levelgenerator, imageloading 
-from lib import block
+from lib import block, mob
 
 # Test Zone
 pygame.init()
@@ -20,18 +20,9 @@ level.writeToGrid(level.rooms)
 level.generateHalls(4)
 level.writeToGrid(level.hallways)
 
-start = level.rooms[0].topleft
-char = block.Block(start)
-char.active = True
-image, array_images = imageloading.getActionImages('mob','blob','initia')
-char.loadImages(array_images)
-level.grid_active[char.pos[0]][char.pos[1]] = char
-
-# use for filling in shadows
-s = pygame.Surface((10,10))
-s.set_alpha(128)
-s.fill((0,255,0))
-screen.blit(s,(0,0))
+# character creation
+char = mob.Character(level.rooms[0],'blob','initial')
+level.updateLayer(char.block, 0)
 
 # End 
 #test_images = ['images/test/type0/_initial/0.png','images/test/type0/_initial/1.png','images/test/type0/_initial/2.png','images/test/type0/_initial/3.png']
@@ -86,9 +77,8 @@ while 1:
             pass
         clk.tick(60) # update x times per second
         # update and display game world
-        level.moveActive(char, [char.pos[0]+xadd,char.pos[1]+yadd])
-        level.processShadows(char.pos,3)
+        level.moveActive(char.block, [char.block.pos[0]+xadd,char.block.pos[1]+yadd])
+        level.processShadows(char.block.pos,6)
         level.updateLevel(screen)
-        screen.blit(s,(600,600))
         pygame.display.flip()
 

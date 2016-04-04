@@ -74,7 +74,8 @@ class Block(pygame.sprite.Sprite):
         if total > 0:
             # check to see if rate has triggered
             self.rate_count += 1
-            if self.rate_count >= self.rate:
+            if True:
+            #if self.rate_count >= self.rate:
                 # reset rate count and update image
                 self.rate_count = 0
                 if self.index >= (len(self.images)-1):

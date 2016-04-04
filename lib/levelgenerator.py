@@ -33,6 +33,15 @@ class Level:
                 surf.fill((0,0,0)) # TODO set to black
                 self.grid_shadow[row].append(surf)
 
+    def updateLayer(self, blk, num):
+        # num: 0 - updates active layer, 1 - updates both layers
+        if num == 0:
+            self.grid_active[blk.pos[0]][blk.pos[1]] = blk
+        else:
+            self.grid_active[blk.pos[0]][blk.pos[1]] = blk
+            self.grid[blk.pos[0]][blk.pos[1]] = blk
+        
+
     def updateLevel(self, screen):
         # update and display each block in level
         for x in range(self.size[0]):
@@ -85,10 +94,14 @@ class Level:
         for x in range(self.size[0]):
             for y in range(self.size[1]):
                 self.grid_shadow[x][y].set_alpha(255)
+        # TODO check for borders and check for solid blocks!!! TODO IMPORTANT
         for x in range(-light_level,light_level+1):
             for y in range(-light_level,light_level+1):
-                total = 4 - (abs(x) + abs(y))
-                light_scale = 4 - (abs(x) + abs(y))
+                # check for out of level size
+                if pos[0]+x >= self.size[0] or pos[0]+x < 0 or pos[1]+y >= self.size[1] or pos[1]+y < 0:
+                    continue
+                total = (light_level+1) - (abs(x) + abs(y))
+                light_scale = (light_level+1) - (abs(x) + abs(y))
                 scale = 220 - (light_scale*120)
                 if scale < 0:
                     scale = 0
@@ -96,7 +109,6 @@ class Level:
                     scale = 255
                 if total >= 0:
                     self.grid_shadow[pos[0]+x][pos[1]+y].set_alpha(scale)
-                    #self.grid_shadow[pos[0]+x][pos[1]+y].set_alpha(0)
                 else:
                     self.grid_shadow[pos[0]+x][pos[1]+y].set_alpha(255)
 
