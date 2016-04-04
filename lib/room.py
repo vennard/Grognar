@@ -75,7 +75,21 @@ class Room:
     def containsRoom(self, room):
         # returns true if self.room overlaps with room
         # allows for border of 1
-        if ((self.topleft[0]-1 <= room.topleft[0] <= self.botright[0]+1) or (self.topleft[0]-1 <= room.botright[0] <= self.botright[0]+1)) and ((self.topleft[1]-1 <= room.topleft[1] <= self.botright[1]+1) or (self.topleft[1]-1 <= room.botright[1] <= self.botright[1]+1)):
+        # x: xlow1------rlow2-----rhigh2-----xhigh1
+        '''
+        clow, chigh = self.topleft[0], self.botright[0]
+        xlow, xhigh = room.topleft[0], room.botright[0]
+        if ((xlow and xhigh) < clow) or ((xlow and xhigh) > chigh):
+            print "found x conflict"
+            return True
+        clow, chigh = self.topleft[1], self.botright[1]
+        xlow, xhigh = room.topleft[1], room.botright[1]
+        if ((xlow and xhigh) < clow) or ((xlow and xhigh) > chigh):
+            print "found y conflict"
+            return True
+        '''
+        if ((self.topleft[0]-2 <= room.topleft[0] <= self.botright[0]+2) or (self.topleft[0]-2 <= room.botright[0] <= self.botright[0]+2) or ((room.topleft[0] <= self.topleft[0]-2) and (room.botright[0] >= self.botright[0]+2))) and ((self.topleft[1]-2 <= room.topleft[1] <= self.botright[1]+2) or (self.topleft[1]-2 <= room.botright[1] <= self.botright[1]+2) or ((room.topleft[0] <= self.topleft[0]-2) and (room.botright[0] >= self.botright[0]+2))):
+        #if ((self.topleft[0]-1 <= room.topleft[0] <= self.botright[0]+1) or (self.topleft[0]-1 <= room.botright[0] <= self.botright[0]+1)) and ((self.topleft[1]-1 <= room.topleft[1] <= self.botright[1]+1) or (self.topleft[1]-1 <= room.botright[1] <= self.botright[1]+1)):
             return True
         return False
 

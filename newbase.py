@@ -15,7 +15,7 @@ screen = pygame.display.set_mode((SIZE,SIZE))
 level = levelgenerator.Level([level_size,level_size])
 
 # Create rooms
-level.generateRooms(4)
+level.generateRooms(7)
 level.writeToGrid(level.rooms)
 level.generateHalls(4)
 level.writeToGrid(level.hallways)
@@ -42,6 +42,8 @@ while 1:
             print("Exited through canceling screen")
             exit()
         elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_q:
+                exit()
             # capture keypress - check for diagonal (two keys pressed at same time) first
             if event.key == pygame.K_UP or event.key == pygame.K_KP8:
                 yadd = -1
