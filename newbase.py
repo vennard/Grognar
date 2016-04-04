@@ -27,6 +27,12 @@ image, array_images = imageloading.getActionImages('mob','blob','initia')
 char.loadImages(array_images)
 level.grid_active[char.pos[0]][char.pos[1]] = char
 
+# use for filling in shadows
+s = pygame.Surface((10,10))
+s.set_alpha(128)
+s.fill((0,255,0))
+screen.blit(s,(0,0))
+
 # End 
 #test_images = ['images/test/type0/_initial/0.png','images/test/type0/_initial/1.png','images/test/type0/_initial/2.png','images/test/type0/_initial/3.png']
 #level.grid[1][1].loadImages(test_images)
@@ -82,5 +88,6 @@ while 1:
         # update and display game world
         level.moveActive(char, [char.pos[0]+xadd,char.pos[1]+yadd])
         level.updateLevel(screen)
+        screen.blit(s,(600,600))
         pygame.display.flip()
 
