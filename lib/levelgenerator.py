@@ -30,7 +30,7 @@ class Level:
                 self.grid_active[row].append(block.Block((row,col)))
                 surf = pygame.Surface((block.SCALE,block.SCALE))
                 surf.set_alpha(255) # set default to full black
-                surf.fill((0,0,0)) # TODO set to black
+                surf.fill((0,0,0)) # set to black
                 self.grid_shadow[row].append(surf)
 
     def updateLayer(self, blk, num):
@@ -94,7 +94,6 @@ class Level:
         for x in range(self.size[0]):
             for y in range(self.size[1]):
                 self.grid_shadow[x][y].set_alpha(255)
-        # TODO check for borders and check for solid blocks!!! TODO IMPORTANT
         for x in range(-light_level,light_level+1):
             for y in range(-light_level,light_level+1):
                 # check for out of level size
@@ -111,9 +110,6 @@ class Level:
                     self.grid_shadow[pos[0]+x][pos[1]+y].set_alpha(scale)
                 else:
                     self.grid_shadow[pos[0]+x][pos[1]+y].set_alpha(255)
-
-
-
 
     def generateRooms(self, num):
         self.rooms = room.createRooms(num, self.size)
